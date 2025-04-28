@@ -1,0 +1,436 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ purchase.title }}</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="bi bi-download"></i> Generate Report
+        </a>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Сведения
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            c {{ purchase.opened_date }} по
+                            {% if purchase.closed_date %}
+                                {{ purchase.closed_date }}
+                            {% else %}
+                                <span class="text-body-tertiary">Закупка не закрыта</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Заказы
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ records_info.number_of_orders }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Участники
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ records_info.number_of_customers }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Сумма
+                        </div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ records_info.total_amount|floatformat:2 }} ¥</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-dark shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                            Курс ¥
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ purchase.exchange }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Расходы
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ purchase.other_expenses }} ₽</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-dark shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                            Вес
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ records_info.orders_weight }} Кг</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Комиссия
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_tax_amount }} ₽</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Разница
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_dif_amount }} ₽</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Сумма
+                        </div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ total_amount_rub }} ₽</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-3 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Общий доход
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_profit }} ₽</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-12">
+
+        <div class="d-flex justify-content-between align-items-center mb-2 text-body">
+            <h3 class="text-info mb-3">Заказы</h3>
+            <p class="mb-2">
+                <a href="{% url 'create-purchase-order' pk=purchase.pk %}" class="btn btn-outline-info">
+                    <i class="bi bi-person-plus"></i> Добавить новый заказ в закупку
+                </a>
+            </p>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-2 text-body">
+            Всего записей: <span class="ms-2 badge bg-dark">{{ total_records }}</span>
+        </div>
+
+        <div>
+            <form method="get" class="d-flex mt-3 mb-3">
+                {% for field in form %}
+                    {{ field }}
+                {% endfor %}
+                <a href="{% url 'purchase' pk=purchase.pk %}" class="btn btn-link">Сбросить</a>
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Поиск</button>
+            </form>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Скрин</th>
+                        <th scope="col">
+                            Наименование
+                            <a href="?sort=phone{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                            <a href="?sort=-phone{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                        </th>
+                        <th scope="col">
+                            Цена заказа
+                            <a href="?sort=telegram_id{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                            <a href="?sort=-telegram_id{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                        </th>
+                        <th scope="col">
+                            Цена выкупа
+                            <a href="?sort=tax{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                            <a href="?sort=-tax{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                        </th>
+                        <th scope="col">Комиссия</th>
+                        <th scope="col">Разница</th>
+                        <!-- <th scope="col">Закупка</th> -->
+                        <th scope="col">Клиент / Трек #</th>
+                        <th scope="col" class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in records %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td class="text-center">
+                                <img
+                                    src="/media/{{item.img}}"
+                                    alt=""
+                                    style="width: 48px"
+                                    data-bs-toggle="offcanvas"
+                                    href="#img-{{ item.id }}"
+                                    role="button"
+                                    aria-controls="show"
+                                />
+                                <div class="offcanvas offcanvas-start" tabindex="-1" id="img-{{ item.id }}" aria-labelledby="img-{{ item.id }}Label">
+                                    <div class="offcanvas-header">
+                                        <h4 class="text-start text-info" id="img-{{ item.id }}Label"><a href="{{ item.url }}" target="_blank">{{ item.title }}</a></h4>
+                                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                    </div>
+                                    <div class="offcanvas-body">
+                                        <img
+                                            src="/media/{{item.img}}"
+                                            alt=""
+                                            style="width: 100%"
+                                        />
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-nowrap">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <p class="fw-bold mb-1">
+                                            <a href="{% url 'order' pk=item.pk %}">
+                                                {{ item.title }}
+                                            </a>
+                                        </p>
+                                        <p class="mb-0 text-body-tertiary">
+                                            Количество: <span class="badge bg-success">{{ item.quantity }}</span> шт.
+                                        </p>
+                                        <p class="mb-0">
+                                            <a href="{{ item.url }}">Ссылка</a>
+                                        </p>
+                                        <p class="mb-0">
+                                            <span class="badge bg-info">{{ item.get_status }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-nowrap">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <p class="fw-bold mb-1 text-success-emphasis">
+                                            ¥ {{ item.order_price }}
+                                        </p>
+                                        <p class="fw-bold mb-0 text-danger-emphasis">
+                                            ₽ {{ item.calculate_order_exchange_price }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-nowrap">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <p class="fw-bold mb-1 text-success-emphasis">
+                                            ¥ {{ item.buy_price }}
+                                        </p>
+                                        <p class="fw-bold mb-0 text-danger-emphasis">
+                                            ₽ {{ item.calculate_buy_exchange_price }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <p class="fw-bold mb-1 text-success-emphasis">
+                                            ¥ {% if item.difference_tax %}{{ item.difference_tax }}{% else %}0{% endif %}
+                                        </p>
+                                        <p class="fw-bold mb-0 text-danger-emphasis">
+                                            ₽ {% if item.difference_tax %}{{ item.calculate_difference_tax }}{% else %}0{% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <p class="fw-bold mb-1 text-success-emphasis">
+                                            ¥ {% if item.difference %}{{ item.difference }}{% else %}---{% endif %}
+                                        </p>
+                                        <p class="fw-bold mb-0 text-danger-emphasis">
+                                            ₽ {% if item.difference %}{{ item.calculate_difference }}{% else %}---{% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <!-- <td class="text-nowrap">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <a href="{% url 'purchase' pk=item.purchase.pk %}">
+                                            <strong>{{ item.purchase }}</strong>
+                                        </a>
+                                        <p class="mb-0 text-body-tertiary">
+                                            Курс: <span class="badge bg-dark">{{ item.exchange_rate }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td> -->
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <a href="{% url 'customer' pk=item.customer.pk %}">
+                                            <strong>{{ item.customer }}</strong>
+                                        </a>
+                                        <p class="mb-0">
+                                            <span class="badge bg-info">{% if item.track_num %}{{ item.track_num }}{% else %}Нет{%endif%}</span>
+                                        </p>
+                                        <p class="mb-0">
+                                            <span class="badge bg-dark">{{ item.marketplace }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'order_edit' pk=item.pk %}" class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a class="btn btn-sm btn-outline-danger" data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
+                                    <div class="offcanvas-header">
+                                        <h5 class="offcanvas-title" id="{{ item.id }}Label">{{ customer.name }}</h5>
+                                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                    </div>
+                                    <div class="offcanvas-body">
+                                        <h1 class="text-start text-info">{{ item.title }}</h1>
+                                        <div class="text-start">
+                                            Это действие безвозвратно удалит объект из базы данных!
+                                        </div>
+                                        <div class="mt-3">
+                                            <a href="{% url 'order_delete' pk=item.pk %}" class="btn btn-danger me-1">Подтвердить</a>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr class="text-center no-hover">
+                            <td colspan="10" class="no-hover p-4">
+                                <svg
+                                    height="45px"
+                                    width="45px"
+                                    version="1.1"
+                                    id="empty"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    viewBox="0 0 412.533 412.533"
+                                    xml:space="preserve"
+                                >
+                                    <g>
+                                        <path
+                                            style="fill:#c1c1c2;"
+                                            d="M412.485,203.954h0.041c0-14.323-5.609-27.336-14.729-37.042l0.016-0.016l-79.27-101.819H90.479
+                                            L13.493,168.961l0.033,0.033c-7.283,8.616-11.762,19.565-12.534,31.514C0.415,201.629,0,202.84,0,204.19v135.138
+                                            c0,4.495,3.642,8.129,8.129,8.129h396.276c4.495,0,8.129-3.633,8.129-8.129V204.19
+                                            C412.533,204.109,412.485,204.035,412.485,203.954z M97.844,81.335H311.43l48.389,68.5c-0.512-0.016-1-0.081-1.52-0.081h-97.502
+                                            v24.369c0,27.67-29.052,21.687-37.96,21.687h-32.466c-8.909,0-37.96,5.983-37.96-21.687v-24.369H54.9
+                                            c-1.016,0-2.008,0.098-3.016,0.146L97.844,81.335z M396.276,331.199H16.265V204.19c0-0.081-0.041-0.154-0.049-0.236h0.723
+                                            c0-20.923,17.029-37.944,37.96-37.944h81.253v8.112c0,27.987,21.281,37.944,54.218,37.944h32.466
+                                            c32.945,0,54.218-9.957,54.218-37.944v-8.112h81.261c10.461,0,19.948,4.251,26.824,11.12l0.016,0.016
+                                            c6.869,6.869,11.112,16.347,11.112,26.808h0.057c0,0.081-0.049,0.154-0.049,0.236C396.276,204.19,396.276,331.199,396.276,331.199z
+                                            "
+                                        />
+                                    </g>
+                                </svg>
+                                <p class="text-body-tertiary">Нет данных</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

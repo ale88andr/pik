@@ -1,0 +1,116 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-4">
+            <!-- Order picture card-->
+            <div class="card mb-4 mb-xl-0">
+                <div class="card-header">Изображение заказа</div>
+                <div class="card-body text-center">
+                    <!-- Order picture image-->
+                    <img
+                            src="/media/{{ order.img }}"
+                            alt=""
+                            style="width: 100%"
+                            data-bs-toggle="offcanvas"
+                            href="#img-{{ item.id }}"
+                            role="button"
+                            aria-controls="show"
+                        />
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8">
+            <!-- Order details card-->
+            <div class="card mb-4">
+                <div class="card-header">Данные заказа</div>
+                <div class="card-body">
+                    <p>
+                        <span class="badge bg-info">{{ order.get_status }}</span>
+                    </p>
+                    <h4 class="text-primary">Оформление заказа</h4>
+                    <hr>
+                    <table class="table table-th-block">
+                        <tbody>
+                            <tr>
+                                <td class="active" style="width: 20%">Наименование:</td>
+                                <td colspan="2"><strong>{{ order.title }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Ссылка:</td>
+                                <td colspan="2"><p class="fw-bold mb-1"><a href="{{ order.url }}" target="_blank">{{ order.url }}</a></p></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Количество:</td>
+                                <td colspan="2"><span class="badge bg-success">{{ order.quantity }}</span></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Цена:</td>
+                                <td><span class="badge bg-info">{{ order.order_price }} ¥</span></td>
+                                <td><span class="badge bg-danger">{{ order.calculate_order_exchange_price }} ₽</span></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Курс:</td>
+                                <td colspan="2"><span class="badge bg-dark">{{ order.exchange_rate }}</span></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Заказчик:</td>
+                                <td colspan="2"><a href="{% url 'customer' pk=order.customer.pk %}"><strong>{{ order.customer }}</strong></a></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Площадка:</td>
+                                <td colspan="2"><span class="badge bg-primary">{{ order.marketplace }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="text-primary">Выкуп заказа</h4>
+                    <hr>
+                    <table class="table table-th-block">
+                        <tbody>
+                            <tr>
+                                <td class="active" style="width: 20%">Цена:</td>
+                                <td><span class="badge bg-info">¥ {{ order.buy_price }}</span></td>
+                                <td><span class="badge bg-danger">₽ {{ order.calculate_buy_exchange_price }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="text-primary">Доставка заказа</h4>
+                    <hr>
+                    <table class="table table-th-block">
+                        <tbody>
+                            <tr><td class="active" style="width: 20%">Трек #:</td><td><span class="badge bg-primary">{{ order.track_num|default:"Не присвоен" }}</span></td></tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="text-primary">Доход с заказа</h4>
+                    <hr>
+                    <table class="table table-th-block">
+                        <tbody>
+                            <tr>
+                                <td class="active" style="width: 20%">Коммиссия:</td>
+                                <td><span class="badge bg-info">¥ {% if order.difference_tax %}{{ order.difference_tax }}{% else %}0{% endif %}</span></td>
+                                <td><span class="badge bg-danger">₽ {% if order.difference_tax %}{{ order.calculate_difference_tax }}{% else %}0{% endif %}</span></td>
+                            </tr>
+
+                            <tr>
+                                <td class="active">Выкуп:</td>
+                                <td><span class="badge bg-info">¥ {% if order.difference %}{{ order.difference }}{% else %}0{% endif %}</span></td>
+                                <td><span class="badge bg-danger">₽ {% if order.difference %}{{ order.calculate_difference }}{% else %}0{% endif %}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Order buttons -->
+                    <a href="{% url 'order_edit' pk=order.pk %}" class="btn btn-primary me-1">
+                        <i class="bi bi-pencil-square"></i> Редактировать заказ
+                    </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

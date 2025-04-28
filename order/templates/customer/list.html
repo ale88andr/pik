@@ -1,0 +1,140 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center mb-2 text-body">
+        <h1 class="text-body mb-3">Клиенты</h1>
+        <p class="mb-2">
+            <a href="{% url 'customer_new' %}" class="btn btn-outline-success">
+                <i class="bi bi-person-plus"></i> Добавить клиента
+            </a>
+        </p>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2 text-body">
+        Всего записей: <span class="ms-2 badge bg-dark">{{ total }}</span>
+    </div>
+
+    <div>
+        <form method="get" class="d-flex mt-3 mb-3">
+            <input class="form-control me-sm-2" name="query" value="{% if search_query %}{{search_query}}{% endif %}" type="search" placeholder="Поиск">
+            <a href="{% url 'customers' %}" class="btn btn-link">Отменить</a>
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Поиск</button>
+        </form>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">
+                    Имя
+                    <a href="?sort=name{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                    <a href="?sort=-name{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                </th>
+                <th scope="col">
+                    Номер телефона
+                    <a href="?sort=phone{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                    <a href="?sort=-phone{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                </th>
+                <th scope="col">
+                    Telegram ID
+                    <a href="?sort=telegram_id{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                    <a href="?sort=-telegram_id{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                </th>
+                <th scope="col">
+                    Комиссия
+                    <a href="?sort=tax{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                    <a href="?sort=-tax{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                </th>
+                <th scope="col" class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>
+                        <strong>
+                            <a href="{% url 'customer' pk=customer.pk %}">
+                                {{ customer.name }}
+                            </a>
+                        </strong>
+                    </td>
+                    <td>
+                        {% if customer.phone %}
+                            {{ customer.phone }}
+                        {% else %}
+                            <span class="text-body-tertiary">Не указан</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if customer.telegram_id %}
+                            <a href="https://t.me/{{ customer.telegram_id }}" target="_blank">{{ customer.telegram_id }}</a>
+                        {% else %}
+                            <span class="text-body-tertiary">Не указан</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge rounded-pill bg-danger">{{ customer.tax }} %</span>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'customer_edit' pk=customer.pk %}" class="btn btn-sm btn-outline-primary me-1">
+                            <i class="bi bi-pencil-square"></i> Изменить
+                        </a>
+                        <a class="btn btn-sm btn-outline-danger" data-bs-toggle="offcanvas" href="#{{ customer.id }}" role="button" aria-controls="delete">
+                            <i class="bi bi-trash"></i> Удалить
+                        </a>
+                        <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ customer.id }}" aria-labelledby="{{ customer.id }}Label">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="{{ customer.id }}Label">{{ customer.name }}</h5>
+                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <div class="text-start">
+                                    Это действие безвозвратно удалит объект из базы данных!
+                                </div>
+                                <div class="mt-3">
+                                    <a href="{% url 'customer_delete' pk=customer.pk %}" class="btn btn-danger me-1">Подтвердить</a>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr class="text-center no-hover">
+                    <td colspan="6" class="no-hover p-4">
+                        <svg
+                            height="45px"
+                            width="45px"
+                            version="1.1"
+                            id="empty"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            viewBox="0 0 412.533 412.533"
+                            xml:space="preserve"
+                        >
+                            <g>
+                                <path
+                                    style="fill:#c1c1c2;"
+                                    d="M412.485,203.954h0.041c0-14.323-5.609-27.336-14.729-37.042l0.016-0.016l-79.27-101.819H90.479
+                                    L13.493,168.961l0.033,0.033c-7.283,8.616-11.762,19.565-12.534,31.514C0.415,201.629,0,202.84,0,204.19v135.138
+                                    c0,4.495,3.642,8.129,8.129,8.129h396.276c4.495,0,8.129-3.633,8.129-8.129V204.19
+                                    C412.533,204.109,412.485,204.035,412.485,203.954z M97.844,81.335H311.43l48.389,68.5c-0.512-0.016-1-0.081-1.52-0.081h-97.502
+                                    v24.369c0,27.67-29.052,21.687-37.96,21.687h-32.466c-8.909,0-37.96,5.983-37.96-21.687v-24.369H54.9
+                                    c-1.016,0-2.008,0.098-3.016,0.146L97.844,81.335z M396.276,331.199H16.265V204.19c0-0.081-0.041-0.154-0.049-0.236h0.723
+                                    c0-20.923,17.029-37.944,37.96-37.944h81.253v8.112c0,27.987,21.281,37.944,54.218,37.944h32.466
+                                    c32.945,0,54.218-9.957,54.218-37.944v-8.112h81.261c10.461,0,19.948,4.251,26.824,11.12l0.016,0.016
+                                    c6.869,6.869,11.112,16.347,11.112,26.808h0.057c0,0.081-0.049,0.154-0.049,0.236C396.276,204.19,396.276,331.199,396.276,331.199z
+                                    "
+                                />
+                            </g>
+                        </svg>
+                        <p class="text-body-tertiary">Нет данных</p>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

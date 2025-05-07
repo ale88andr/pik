@@ -46,7 +46,7 @@
                         </thead>
                         <tbody>
                             <tr class="odd">
-                                <td class="sorting_1">{{ purchase.purchase__title }}</td>
+                                <td class="sorting_1"><a href={% url 'customer-purchase' pk=customer.pk purchase_pk=purchase.purchase__id %}>{{ purchase.purchase__title }}</a></td>
                                 <td><span class="badge bg-success">{{ purchase.total }}</span></td>
                                 <td><span class="badge bg-dark">{{ purchase.purchase__exchange }}</span></td>
                                 <td><span class="badge bg-info">{{ purchase.sum_in_rub }}</span></td>

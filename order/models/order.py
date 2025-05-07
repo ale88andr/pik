@@ -40,8 +40,8 @@ class Order(models.Model):
     title = models.CharField("Наименование товара", max_length=200)
     img = models.ImageField("Изображение товара", upload_to=IMG_MEDIA_DIR, null=True, blank=True)
     order_price = models.DecimalField("Цена заказа", max_digits=5, decimal_places=2, help_text="Цена товара при оформлении заказа в ¥")
-    buy_price = models.DecimalField("Цена покупки", max_digits=5, decimal_places=2, default=0, help_text="Цена товара при выкупе")
-    exchange = models.DecimalField("Курс при покупке", max_digits=5, decimal_places=2, default=0, help_text="Курс валюты при выкупе")
+    buy_price = models.DecimalField("Цена выкупа", max_digits=5, decimal_places=2, default=0, help_text="Цена товара при выкупе")
+    exchange = models.DecimalField("Курс выкупа", max_digits=5, decimal_places=2, default=0, help_text="Курс валюты при выкупе")
     weight = models.IntegerField("Вес", null=True, blank=True, default=0, help_text="Вес товара")
     quantity = models.IntegerField("Количество", default=1)
     track_num = models.CharField("Трек номер", max_length=200, null=True, blank=True, help_text="Номер отслеживания заказа")
@@ -102,6 +102,15 @@ class Order(models.Model):
         if not self.order_price or self.buy_price <= 0:
             return None
         return (self.order_price * self.customer.tax / 100) * self.quantity
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            for mp in Marketplace.objects.all():
+                if self.url.startswith(mp.url):
+                    self.marketplace = mp
+                    break
+
+        super(Order, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title

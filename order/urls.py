@@ -6,15 +6,20 @@ from .views import purchase
 
 urlpatterns = [
     # customers
-    path('customers', customer.list, name="customers"),
+    path('customers', customer.index, name="customers"),
     path('customers/<int:pk>/edit', customer.edit, name='customer_edit'),
     path('customers/<int:pk>/delete', customer.delete, name='customer_delete'),
     path('customers/<int:pk>/', customer.detail, name='customer'),
+    path('customers/<int:pk>/purchase/<int:purchase_pk>/pdf', customer.purchase_pdf, name='customer-purchase-pdf'),
+    path('customers/<int:pk>/purchase/<int:purchase_pk>/new-order', customer.create_order, name='create-customer-order'),
+    path('customers/<int:pk>/purchase/<int:purchase_pk>', customer.purchase, name='customer-purchase'),
     path('customers/new/', customer.create, name='customer_new'),
 
     # orders
     path('orders', order.list, name="orders"),
     path('orders/<int:pk>/edit', order.edit, name='order_edit'),
+    path('orders/<int:pk>/buy', order.buy, name='order-buy'),
+    path('orders/<int:pk>/set-track', order.set_track_num, name='order-set-track'),
     path('orders/<int:pk>/delete', order.delete, name='order_delete'),
     path('orders/<int:pk>/', order.detail, name='order'),
     path('orders/new/', order.create, name='create-order'),

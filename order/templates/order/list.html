@@ -94,7 +94,7 @@
                                     <span class="badge bg-dark">{{ item.marketplace }}</span>
                                 </p>
                                 <p class="mb-0">
-                                    <span class="badge bg-info">{{ item.status }}</span>
+                                    <span class="badge bg-info">{{ item.get_status }}</span>
                                 </p>
                             </div>
                         </div>
@@ -120,6 +120,13 @@
                                 <p class="fw-bold mb-0 text-danger-emphasis">
                                     ₽ {{ item.calculate_buy_exchange_price }}
                                 </p>
+                                {% if not item.buy_price %}
+                                    <p>
+                                        <a href="{% url 'order-buy' pk=item.pk %}" class="btn btn-sm btn-outline-warning mt-1">
+                                            <i class="bi bi-bag me-1"></i> Выкупить товар
+                                        </a>
+                                    </p>
+                                {% endif %}
                             </div>
                         </div>
                     </td>
@@ -149,6 +156,13 @@
                     </td>
                     <td>
                         <span class="badge bg-info">{% if item.track_num %}{{ item.track_num }}{% else %}Нет{%endif%}</span>
+                        {% if item.buy_price and not item.track_num %}
+                            <p>
+                                <a href="{% url 'order-set-track' pk=item.pk %}" class="btn btn-sm btn-outline-warning mt-1">
+                                    <i class="bi bi-truck me-1"></i> Добавить
+                                </a>
+                            </p>
+                        {% endif %}
                     </td>
                     <td class="text-nowrap">
                         <div class="d-flex align-items-center">
@@ -176,7 +190,7 @@
                         </a>
                         <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
                             <div class="offcanvas-header">
-                                <h5 class="offcanvas-title" id="{{ item.id }}Label">{{ customer.name }}</h5>
+                                <h5 class="offcanvas-title" id="{{ item.id }}Label">Удалить заказ</h5>
                                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                             </div>
                             <div class="offcanvas-body">

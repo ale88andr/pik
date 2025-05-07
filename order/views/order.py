@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import model_to_dict
 from django.contrib import messages
 
-from order.forms.order import CreateOrderForm, OrderForm
+from order.forms.order import BuyOrderForm, CreateOrderForm, OrderForm, SetTrackNumOrderForm
 from order.forms.search import SearchForm
 from order.models.order import Order
 
@@ -41,9 +41,13 @@ def create(request):
     if request.method == "POST":
         form = CreateOrderForm(request.POST, files=request.FILES)
         if form.is_valid():
-            customer = form.save(commit=False)
-            customer.save()
-            return redirect("order", pk=customer.pk)
+            order = form.save()
+            messages.success(request, f"Заказ '{order.title}' оформлен")
+            
+            if "add_another" in request.POST:
+                return redirect("create-order")
+            
+            return redirect("orders")
         else:
             messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
     else:
@@ -64,6 +68,38 @@ def edit(request, pk):
     else:
         obj = get_object_or_404(Order, pk=pk)
         form = OrderForm(model_to_dict(obj))
+
+    return render(request, "order/form.html", {"form": form})
+
+
+def buy(request, pk):
+    order = get_object_or_404(Order, id=pk)
+    if request.method == "POST":
+        form = BuyOrderForm(request.POST, instance=order)
+        if form.is_valid():
+            form.status = Order.Status.BUYED
+            form.save()
+
+            messages.success(request, "Данные заказа обновлены!")
+            return redirect("order", pk=order.pk)
+    else:
+        form = BuyOrderForm(model_to_dict(order))
+
+    return render(request, "order/form.html", {"form": form})
+
+
+def set_track_num(request, pk):
+    order = get_object_or_404(Order, id=pk)
+    if request.method == "POST":
+        form = SetTrackNumOrderForm(request.POST, instance=order)
+        if form.is_valid():
+            form.status = Order.Status.IN_DELIVERY
+            form.save()
+
+            messages.success(request, "Трек номер доставки добавлен!")
+            return redirect("order", pk=order.pk)
+    else:
+        form = SetTrackNumOrderForm(model_to_dict(order))
 
     return render(request, "order/form.html", {"form": form})
 

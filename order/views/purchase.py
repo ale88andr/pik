@@ -114,22 +114,20 @@ def create(request):
 def create_purchase_order(request, pk):
     if request.method == "POST":
         obj = get_object_or_404(Purchase, id=pk)
-        form = CreatePurchaseOrderForm(request.POST)
+        form = CreatePurchaseOrderForm(request.POST, files=request.FILES)
         if form.is_valid():
-            marketplace = form.cleaned_data["url"]
-            marketplace_id = None
-            for m in Marketplace.objects.all():
-                if marketplace.startswith(m.url):
-                    marketplace_id = m.id
-                    break
             order = form.save(commit=False)
-            order.marketplace_id = marketplace_id
             obj.purchase_orders.add(order, bulk=False)
 
             messages.success(request, f"Заказ '{order.title}' оформлен")
+            
+            if "add_another" in request.POST:
+                return redirect("create-purchase-order", pk=pk)
+            
             return redirect("purchase", pk=obj.pk)
+        else:
+            messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
     else:
-        messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
         form = CreatePurchaseOrderForm()
 
     return render(request, "order/form.html", {"form": form})

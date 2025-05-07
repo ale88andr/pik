@@ -1,8 +1,5 @@
 FROM python:3.13-slim
 
-# Create the app directory
-RUN mkdir /app
-
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -23,11 +20,11 @@ RUN apt-get update \
     && apt-get -y install libpq-dev gcc
 
 # Copy the Django project  and install dependencies
-COPY requirements.txt  /app/
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the Django project to the container
-COPY . /app/
+COPY . .
 
 # Expose the Django port
 EXPOSE 8000

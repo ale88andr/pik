@@ -70,8 +70,8 @@ class CreatePurchaseOrderForm(OrderForm):
             "order_price",
             "customer"
         )
-        
-        
+
+
 class CreatePurchaseCustomerOrderForm(OrderForm):
 
     class Meta:

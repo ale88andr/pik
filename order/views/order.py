@@ -43,17 +43,17 @@ def create(request):
         if form.is_valid():
             order = form.save()
             messages.success(request, f"Заказ '{order.title}' оформлен")
-            
+
             if "add_another" in request.POST:
                 return redirect("create-order")
-            
+
             return redirect("orders")
         else:
             messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
     else:
         form = CreateOrderForm()
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/form.html", {"form": form, "is_new": True})
 
 
 def edit(request, pk):

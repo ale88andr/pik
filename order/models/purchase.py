@@ -24,7 +24,7 @@ class Purchase(models.Model):
     def open(self, dt):
         self.opened_date = dt
         self.save()
-        
+
     @property
     def is_opened(self):
         return self.closed_date is None

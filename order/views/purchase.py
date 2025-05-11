@@ -44,7 +44,7 @@ def detail(request, pk):
     if is_form_filled:
         search_form = PurchaseSearchForm(request.GET)
         if search_form.is_valid():
-            search_orders = Order.objects.all()
+            search_orders = Order.objects
 
             search = search_form.cleaned_data["query"]
             customer_id = search_form.cleaned_data["customer"]
@@ -74,7 +74,9 @@ def detail(request, pk):
         orders_weight=Sum("weight"),
     )
 
-    total_amount_rub = round(orders_info.get("total_amount", 0) * purchase.exchange, 2)
+    total = orders_info.get("total_amount", 0) or 0
+
+    total_amount_rub = round(total * purchase.exchange, 2)
     total_tax_amount = sum(order.calculate_difference_tax() for order in orders)
     total_dif_amount = sum(order.calculate_difference() for order in orders)
     total_profit = total_tax_amount + total_dif_amount - purchase.other_expenses
@@ -104,7 +106,7 @@ def create(request):
         if form.is_valid():
             customer = form.save(commit=False)
             customer.save()
-            return redirect("purchases", pk=customer.pk)
+            return redirect("purchases")
     else:
         form = PurchaseInitialForm()
 
@@ -120,17 +122,17 @@ def create_purchase_order(request, pk):
             obj.purchase_orders.add(order, bulk=False)
 
             messages.success(request, f"Заказ '{order.title}' оформлен")
-            
+
             if "add_another" in request.POST:
                 return redirect("create-purchase-order", pk=pk)
-            
+
             return redirect("purchase", pk=obj.pk)
         else:
             messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
     else:
         form = CreatePurchaseOrderForm()
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/form.html", {"form": form, "is_new": True})
 
 
 def edit(request, pk):

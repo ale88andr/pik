@@ -46,7 +46,7 @@ class Order(models.Model):
     quantity = models.IntegerField("Количество", default=1)
     track_num = models.CharField("Трек номер", max_length=200, null=True, blank=True, help_text="Номер отслеживания заказа")
     url = models.URLField("Ссылка", help_text="Ссылка на товар")
-    purchase = models.ForeignKey(Purchase, on_delete=models.PROTECT, verbose_name="Закупка", related_name="purchase_orders")
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE, verbose_name="Закупка", related_name="purchase_orders")
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, verbose_name="Покупатель", related_name="customer_orders")
     marketplace = models.ForeignKey(Marketplace, on_delete=models.PROTECT, verbose_name="Маркетплейс", null=True, blank=True)
     status = models.IntegerField(choices=Status.choices, default=Status.DRAFT, verbose_name="Статус")
@@ -102,7 +102,7 @@ class Order(models.Model):
         if not self.order_price or self.buy_price <= 0:
             return None
         return (self.order_price * self.customer.tax / 100) * self.quantity
-    
+
     def save(self, *args, **kwargs):
         if not self.pk:
             for mp in Marketplace.objects.all():

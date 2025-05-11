@@ -7,7 +7,7 @@ from order.constants import CUSTOMER, CUSTOMERS
 
 
 validate_phone = RegexValidator(r'^(\+?\d{1,3})?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{2}[-.\s]?\d{2}$', "Номер телефона некорректен! Формат ввода +7(777) 777-77-77")
-validate_telegram = RegexValidator(r'^(?=(?:[0-9_]*[a-z]){3})[a-z0-9_]{5,}$', "Telegram ID некоректен!")
+validate_telegram = RegexValidator(r'^[a-zA-Z0-9_]*$', "Telegram ID некоректен!")
 
 
 class CustomerManager(models.Manager):

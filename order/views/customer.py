@@ -89,17 +89,17 @@ def create_order(request, pk, purchase_pk):
             purchase.purchase_orders.add(order, bulk=False)
 
             messages.success(request, f"Заказ '{order.title}' оформлен")
-            
+
             if "add_another" in request.POST:
                 return redirect("create-customer-order", pk=pk, purchase_pk=purchase.pk)
-            
+
             return redirect("customer-purchase", pk=pk, purchase_pk=purchase_pk)
         else:
             messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
     else:
         form = CreatePurchaseCustomerOrderForm()
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/form.html", {"form": form, "is_new": True})
 
 
 def edit(request, pk):
@@ -128,10 +128,10 @@ def purchase(request, pk, purchase_pk):
     purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
 
     return render(
-        request, 
-        "customer/purchase.html", 
+        request,
+        "customer/purchase.html",
         {
-            "customer": customer, 
+            "customer": customer,
             "orders": purchase_orders,
             "purchase": purchase,
             "total": purchase_orders.count()
@@ -142,26 +142,26 @@ def purchase_pdf(request, pk, purchase_pk):
     pdfmetrics.registerFont(TTFont("DejaVuSans", "DejaVuSans.ttf", "utf-8"))
     default_style = ParagraphStyle("Body", fontName="DejaVuSans", fontSize=12)
     title_style = ParagraphStyle("Body", fontName="DejaVuSans", fontSize=20, alignment=TA_CENTER)
-    
+
     customer = get_object_or_404(Customer, pk=pk)
     purchase = get_object_or_404(Purchase, pk=purchase_pk)
     purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
-    
+
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = f"filename='{customer.name}.pdf'"
-    
+
     doc = SimpleDocTemplate(
-        response, 
-        pagesize=A4, 
-        rightMargin=40, 
-        leftMargin=40, 
-        topMargin=20, 
-        bottomMargin=40, 
+        response,
+        pagesize=A4,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=20,
+        bottomMargin=40,
         title="Заказы"
     )
-    
+
     content = []
-    
+
     logo = STATIC_ROOT + "assets/images/logo.png"
     img = Image(logo, 25*mm, 25*mm)
     content.append(img)
@@ -175,22 +175,22 @@ def purchase_pdf(request, pk, purchase_pk):
     content.append(Spacer(1, 5))
     content.append(Paragraph(f"Заказы: { purchase_orders.count() }", default_style))
     content.append(Spacer(1, 5))
-    
+
     content.append(Paragraph("Заказы", title_style))
     content.append(Spacer(1, 20))
-    
+
     table_data = [["Наименование", "Статус", "Цена ¥", "Цена ₽", "Вес (кг.)", "Трек номер"]]
-    
+
     for order in purchase_orders:
         table_data.append([
-            order.title, 
-            order.get_status, 
-            order.order_price, 
+            order.title,
+            order.get_status,
+            order.order_price,
             order.calculate_order_exchange_price(),
             order.weight,
             order.track_num
         ])
-    
+
     t = Table(
         table_data,
         # colWidths=[5 * cm, 4 * cm, 2 * cm, 2 * cm, 2 * cm, 3 * cm],
@@ -199,9 +199,9 @@ def purchase_pdf(request, pk, purchase_pk):
             ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
             ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
         ])
-    
+
     content.append(t)
-    
+
     doc.build(content)
-    
+
     return response

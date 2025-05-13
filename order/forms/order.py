@@ -51,7 +51,6 @@ class CreateOrderForm(OrderForm):
             "title",
             "url",
             "img",
-            "quantity",
             "order_price",
             "customer",
             "purchase"
@@ -66,7 +65,6 @@ class CreatePurchaseOrderForm(OrderForm):
             "title",
             "url",
             "img",
-            "quantity",
             "order_price",
             "customer"
         )
@@ -80,6 +78,5 @@ class CreatePurchaseCustomerOrderForm(OrderForm):
             "title",
             "url",
             "img",
-            "quantity",
             "order_price",
         )

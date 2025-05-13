@@ -87,9 +87,6 @@
                                         {{ item.title }}
                                     </a>
                                 </p>
-                                <p class="mb-0 text-body-tertiary">
-                                    Количество: <span class="badge bg-success">{{ item.quantity }}</span> шт.
-                                </p>
                                 <p class="mb-0">
                                     <span class="badge bg-dark">{{ item.marketplace }}</span>
                                 </p>
@@ -134,10 +131,10 @@
                         <div class="d-flex align-items-center">
                             <div>
                                 <p class="fw-bold mb-1 text-success-emphasis">
-                                    ¥ {% if item.difference_tax %}{{ item.difference_tax }}{% else %}0{% endif %}
+                                    ¥ {{ item.tax }}
                                 </p>
                                 <p class="fw-bold mb-0 text-danger-emphasis">
-                                    ₽ {% if item.difference_tax %}{{ item.calculate_difference_tax }}{% else %}0{% endif %}
+                                    ₽ {% if item.tax %}{{ item.calculate_difference_tax }}{% else %}0{% endif %}
                                 </p>
                             </div>
                         </div>

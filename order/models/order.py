@@ -1,3 +1,5 @@
+from decimal import Decimal
+from typing import Literal
 from django.conf import settings
 from django.db.models import Q
 from django.db import models
@@ -43,7 +45,6 @@ class Order(models.Model):
     buy_price = models.DecimalField("Цена выкупа", max_digits=5, decimal_places=2, default=0, help_text="Цена товара при выкупе")
     exchange = models.DecimalField("Курс выкупа", max_digits=5, decimal_places=2, default=0, help_text="Курс валюты при выкупе")
     weight = models.IntegerField("Вес", null=True, blank=True, default=0, help_text="Вес товара")
-    quantity = models.IntegerField("Количество", default=1)
     track_num = models.CharField("Трек номер", max_length=200, null=True, blank=True, help_text="Номер отслеживания заказа")
     url = models.URLField("Ссылка", help_text="Ссылка на товар")
     purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE, verbose_name="Закупка", related_name="purchase_orders")
@@ -64,44 +65,76 @@ class Order(models.Model):
     def get_status(self):
         return self.get_status_display()
 
-    def close(self, dt):
-        self.closed_date = dt
-        self.save()
-
-    def open(self, dt):
-        self.opened_date = dt
-        self.save()
-
     @property
     def exchange_rate(self):
         return self.exchange if self.exchange else self.purchase.exchange
 
+    @property
+    def get_calculated_data(self):
+        return [
+            self.title,
+            self.url,
+            self.order_price,
+            self.purchase.exchange,
+            self.calculate_order_exchange_price(),
+            f'{self.customer.tax} %',
+            self.calculate_difference_tax(),
+            self.calculate_order_exchange_price() + self.calculate_difference_tax()
+        ]
+
     def calculate_weight(self):
-        return self.weight * self.quantity if self.weight else 0
+        return self.weight if self.weight else 0
 
     def calculate_buy_exchange_price(self):
-        return round(self.quantity * self.buy_price * self.exchange_rate, 2) if self.exchange_rate and self.buy_price else 0
+        return round(self.buy_price * self.exchange_rate, 2) if self.exchange_rate and self.buy_price else 0
 
     def calculate_order_exchange_price(self):
-        return round(self.quantity * self.order_price * self.exchange_rate, 2) if self.exchange_rate and self.order_price else 0
+        return round(self.order_price * self.exchange_rate, 2) if self.exchange_rate and self.order_price else 0
 
     def calculate_difference(self):
-        return round(self.quantity * self.difference * self.exchange_rate, 2) if self.difference and self.order_price else 0
+        return round(self.difference * self.exchange_rate, 2) if self.difference and self.order_price else 0
 
     def calculate_difference_tax(self):
-        return round(self.quantity * self.difference_tax * self.exchange_rate, 2) if self.difference_tax and self.order_price else 0
+        return round(self.tax * self.purchase.exchange, 2) if self.tax and self.order_price else 0
 
     @property
     def difference(self):
         if not self.order_price or self.buy_price <= 0:
             return None
-        return (self.order_price - self.buy_price) * self.quantity
+        return (self.order_price - self.buy_price)
 
     @property
-    def difference_tax(self):
+    def tax(self) -> Decimal | Literal[0]:
+        """Подсчет комиссии за товар
+
+        Возвращаемое значение:
+            int: цена товара * комиссия клиента
+        """
         if not self.order_price or self.buy_price <= 0:
-            return None
-        return (self.order_price * self.customer.tax / 100) * self.quantity
+            return 0
+        return (self.order_price * self.customer.tax / 100)
+
+    @property
+    def get_difference(self):
+        """Подсчет разницы цены заказа и цены выкупа товара с учетом курса
+
+        Возвращаемое значение:
+            int: разница цен или 0
+        """
+        if self.buy_price and self.order_price:
+            diff = self.order_price * self.purchase.exchange - self.buy_price * self.exchange_rate
+            return round(diff, 2)
+
+        return 0
+
+    @property
+    def get_total_profit(self):
+        """Доход с товара
+
+        Возвращаемое значение:
+            int: комиссия клиента + разница заказ-выкуп
+        """
+        return self.calculate_difference_tax() + self.get_difference
 
     def save(self, *args, **kwargs):
         if not self.pk:

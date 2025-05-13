@@ -11,6 +11,7 @@ urlpatterns = [
     path('customers/<int:pk>/delete', customer.delete, name='customer_delete'),
     path('customers/<int:pk>/', customer.detail, name='customer'),
     path('customers/<int:pk>/purchase/<int:purchase_pk>/pdf', customer.purchase_pdf, name='customer-purchase-pdf'),
+    path('customers/<int:pk>/purchase/<int:purchase_pk>/xls', customer.export_customer_purchase_to_excel, name='customer-purchase-xls'),
     path('customers/<int:pk>/purchase/<int:purchase_pk>/new-order', customer.create_order, name='create-customer-order'),
     path('customers/<int:pk>/purchase/<int:purchase_pk>', customer.purchase, name='customer-purchase'),
     path('customers/new/', customer.create, name='customer_new'),

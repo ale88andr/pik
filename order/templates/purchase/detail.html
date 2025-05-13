@@ -239,9 +239,7 @@
                             <a href="?sort=tax{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
                             <a href="?sort=-tax{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
                         </th>
-                        <th scope="col">Комиссия</th>
-                        <th scope="col">Разница</th>
-                        <!-- <th scope="col">Закупка</th> -->
+                        <th scope="col">Доход ₽</th>
                         <th scope="col">Клиент / Трек #</th>
                         <th scope="col" class="text-end">Действия</th>
                     </tr>
@@ -274,7 +272,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-nowrap">
+                            <td class="col-md-3">
                                 <div class="d-flex align-items-center">
                                     <div>
                                         <p class="fw-bold mb-1">
@@ -282,14 +280,12 @@
                                                 {{ item.title }}
                                             </a>
                                         </p>
-                                        <p class="mb-0 text-body-tertiary">
-                                            Количество: <span class="badge bg-success">{{ item.quantity }}</span> шт.
-                                        </p>
                                         <p class="mb-0">
-                                            <a href="{{ item.url }}">Ссылка</a>
+                                            <a href="{{ item.url }}" target="_blank">Ссылка</a>
                                         </p>
                                         <p class="mb-0">
                                             <span class="badge bg-info">{{ item.get_status }}</span>
+                                            <span class="badge bg-dark">{{ item.marketplace }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -300,6 +296,9 @@
                                         <p class="fw-bold mb-1 text-success-emphasis">
                                             ¥ {{ item.order_price }}
                                         </p>
+                                        <p class="fw-bold mb-1 text-success-emphasis">
+                                            <span class="badge bg-dark">{{ purchase.exchange }}</span>
+                                        </p>
                                         <p class="fw-bold mb-0 text-danger-emphasis">
                                             ₽ {{ item.calculate_order_exchange_price }}
                                         </p>
@@ -309,67 +308,67 @@
                             <td class="text-nowrap">
                                 <div class="d-flex align-items-center">
                                     <div>
-                                        <p class="fw-bold mb-1 text-success-emphasis">
-                                            ¥ {{ item.buy_price }}
-                                        </p>
-                                        <p class="fw-bold mb-0 text-danger-emphasis">
-                                            ₽ {{ item.calculate_buy_exchange_price }}
-                                        </p>
+                                        {% if not item.buy_price %}
+                                            <p>
+                                                <a href="{% url 'order-buy' pk=item.pk %}" class="btn btn-sm btn-outline-info mt-1">
+                                                    <i class="bi bi-bag me-1"></i> Выкупить товар
+                                                </a>
+                                            </p>
+                                        {% else %}
+                                            <p class="fw-bold mb-1 text-success-emphasis">
+                                                ¥ {{ item.buy_price }}
+                                            </p>
+                                            <p class="fw-bold mb-1 text-success-emphasis">
+                                                <span class="badge bg-dark">{{ item.exchange_rate }}</span>
+                                            </p>
+                                            <p class="fw-bold mb-0 text-danger-emphasis">
+                                                ₽ {{ item.calculate_buy_exchange_price }}
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <p class="fw-bold mb-1 text-success-emphasis">
-                                            ¥ {% if item.difference_tax %}{{ item.difference_tax }}{% else %}0{% endif %}
-                                        </p>
-                                        <p class="fw-bold mb-0 text-danger-emphasis">
-                                            ₽ {% if item.difference_tax %}{{ item.calculate_difference_tax }}{% else %}0{% endif %}
-                                        </p>
-                                    </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Комиссия: </span>
+                                    <span class="badge bg-dark">{{ item.calculate_difference_tax }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Разница: </span>
+                                    <span class="badge bg-dark">{{ item.get_difference }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Всего: </span>
+                                    <span class="badge bg-dark">{{ item.get_total_profit }}</span>
                                 </div>
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <p class="fw-bold mb-1 text-success-emphasis">
-                                            ¥ {% if item.difference %}{{ item.difference }}{% else %}---{% endif %}
-                                        </p>
-                                        <p class="fw-bold mb-0 text-danger-emphasis">
-                                            ₽ {% if item.difference %}{{ item.calculate_difference }}{% else %}---{% endif %}
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-                            <!-- <td class="text-nowrap">
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <a href="{% url 'purchase' pk=item.purchase.pk %}">
-                                            <strong>{{ item.purchase }}</strong>
-                                        </a>
-                                        <p class="mb-0 text-body-tertiary">
-                                            Курс: <span class="badge bg-dark">{{ item.exchange_rate }}</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </td> -->
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div>
                                         <a href="{% url 'customer' pk=item.customer.pk %}">
                                             <strong>{{ item.customer }}</strong>
                                         </a>
-                                        <p class="mb-0">
-                                            <span class="badge bg-info">{% if item.track_num %}{{ item.track_num }}{% else %}Нет{%endif%}</span>
-                                        </p>
-                                        <p class="mb-0">
-                                            <span class="badge bg-dark">{{ item.marketplace }}</span>
-                                        </p>
+                                        {% if item.buy_price and not item.track_num %}
+                                            <p>
+                                                <a href="{% url 'order-set-track' pk=item.pk %}" class="btn btn-sm btn-outline-warning mt-1">
+                                                    <i class="bi bi-truck me-1"></i> Добавить
+                                                </a>
+                                            </p>
+                                        {% else %}
+                                            <p class="mb-0">
+                                                <span class="badge bg-info">
+                                                    {% if item.track_num %}
+                                                        <a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a>
+                                                    {% else %}
+                                                        Нет
+                                                    {%endif%}
+                                                </span>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-end">
+                            <td class="text-end text-nowrap">
                                 <a href="{% url 'order_edit' pk=item.pk %}" class="btn btn-sm btn-outline-primary me-1">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
@@ -398,7 +397,7 @@
                         <tr class="text-center no-hover">
                             <td colspan="10" class="no-hover p-4">
                                 <svg
-                                    height="45px"
+                                    height="45px"</p>
                                     width="45px"
                                     version="1.1"
                                     id="empty"

@@ -77,8 +77,9 @@ def buy(request, pk):
     if request.method == "POST":
         form = BuyOrderForm(request.POST, instance=order)
         if form.is_valid():
-            form.status = Order.Status.BUYED
-            form.save()
+            instance = form.save(commit=False)
+            instance.status = Order.Status.BUYED
+            instance.save()
 
             messages.success(request, "Данные заказа обновлены!")
             return redirect("order", pk=order.pk)
@@ -93,10 +94,11 @@ def set_track_num(request, pk):
     if request.method == "POST":
         form = SetTrackNumOrderForm(request.POST, instance=order)
         if form.is_valid():
-            form.status = Order.Status.IN_DELIVERY
-            form.save()
+            instance = form.save(commit=False)
+            instance.status = Order.Status.IN_DELIVERY
+            instance.save()
 
-            messages.success(request, "Трек номер доставки добавлен!")
+            messages.success(request, "Трек номер отслеживания доставки добавлен!")
             return redirect("order", pk=order.pk)
     else:
         form = SetTrackNumOrderForm(model_to_dict(order))

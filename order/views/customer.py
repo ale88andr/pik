@@ -1,4 +1,5 @@
 import io
+import pandas as pd
 
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -203,5 +204,23 @@ def purchase_pdf(request, pk, purchase_pk):
     content.append(t)
 
     doc.build(content)
+
+    return response
+
+
+def export_customer_purchase_to_excel(request, pk, purchase_pk):
+    # Query the Person model to get all records
+    customer = get_object_or_404(Customer, pk=pk)
+    customer_purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
+
+    # Convert the QuerySet to a DataFrame
+    df = pd.DataFrame(list(map(lambda o: o.get_calculated_data, customer_purchase_orders)))
+
+    # Define the Excel file response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=persons.xlsx'
+
+    # Use Pandas to write the DataFrame to an Excel file
+    df.to_excel(response, index=False, engine='openpyxl')
 
     return response

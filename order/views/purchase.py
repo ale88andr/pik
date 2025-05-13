@@ -78,7 +78,7 @@ def detail(request, pk):
 
     total_amount_rub = round(total * purchase.exchange, 2)
     total_tax_amount = sum(order.calculate_difference_tax() for order in orders)
-    total_dif_amount = sum(order.calculate_difference() for order in orders)
+    total_dif_amount = sum(order.get_difference for order in orders)
     total_profit = total_tax_amount + total_dif_amount - purchase.other_expenses
 
     records = search_orders if search_orders or is_form_filled else orders

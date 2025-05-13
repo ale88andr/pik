@@ -37,7 +37,7 @@ class PurchaseAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     """Class representing admin settings for a customer model"""
 
-    list_display = ("display_img", "title", "price", "quantity", "purchase", "customer", "marketplace", "status")
+    list_display = ("display_img", "title", "price", "purchase", "customer", "marketplace", "status")
     list_filter = ["purchase", "customer", "marketplace"]
     search_fields = ["title"]
     readonly_fields = ["created_at"]

@@ -99,11 +99,31 @@ def set_track_num(request, pk):
             instance.save()
 
             messages.success(request, "Трек номер отслеживания доставки добавлен!")
-            return redirect("order", pk=order.pk)
+            return redirect(request.headers.get("Referer"), "/")
     else:
         form = SetTrackNumOrderForm(model_to_dict(order))
 
     return render(request, "order/form.html", {"form": form})
+
+
+def set_delivered(request, pk):
+    order = get_object_or_404(Order, id=pk)
+    if request.method == "POST":
+        order.status = Order.Status.DELIVERED
+        order.save()
+
+        messages.success(request, f"Статус заказа {order} обновлен!")
+        return redirect(request.headers.get("Referer"), "/")
+
+
+def set_arrived(request, pk):
+    order = get_object_or_404(Order, id=pk)
+    if request.method == "POST":
+        order.status = Order.Status.ARRIVED
+        order.save()
+
+        messages.success(request, f"Статус заказа {order} обновлен!")
+        return redirect(request.headers.get("Referer"), "/")
 
 
 def delete(request, pk):

@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% with statuses="warning primary secondary info success danger" %}{% endwith %}
+
 <div class="row">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -364,6 +366,17 @@
                                                     {%endif%}
                                                 </span>
                                             </p>
+                                            {% if item.status == 2 %}
+                                                <form method="post" action="{% url 'order-set-delivered' pk=item.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-primary mt-1">Доставлен в ТК</button>
+                                                </form>
+                                            {% elif item.status == 3 %}
+                                                <form method="post" action="{% url 'order-set-arrived' pk=item.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-success mt-1">Прибыл</button>
+                                                </form>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>

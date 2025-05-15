@@ -49,7 +49,7 @@ def detail(request, pk):
             search = search_form.cleaned_data["query"]
             customer_id = search_form.cleaned_data["customer"]
             marketplace_id = search_form.cleaned_data["marketplace"]
-            status = int(search_form.cleaned_data["status"]) if search_form.cleaned_data["status"] else None
+            status = int(search_form.cleaned_data["status"]) if search_form.cleaned_data["status"] is not None else None
 
             if search:
                 search_orders = search_orders.search(query=search)

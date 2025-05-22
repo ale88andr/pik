@@ -72,6 +72,7 @@ class Order(models.Model):
     @property
     def get_calculated_data(self):
         return [
+            "",
             self.title,
             self.url,
             self.order_price,

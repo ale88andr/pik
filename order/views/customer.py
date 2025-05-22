@@ -16,6 +16,7 @@ from reportlab.lib.units import mm, cm
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.lib import colors
 
+from app.services import export_data_to_excel
 from order.forms.customer import CustomerForm
 from order.forms.order import CreatePurchaseCustomerOrderForm
 from order.forms.search import SearchForm
@@ -130,7 +131,7 @@ def purchase(request, pk, purchase_pk):
 
     return render(
         request,
-        "customer/purchase.html",
+        "customer/purchase2.html",
         {
             "customer": customer,
             "orders": purchase_orders,
@@ -208,19 +209,25 @@ def purchase_pdf(request, pk, purchase_pk):
     return response
 
 
-def export_customer_purchase_to_excel(request, pk, purchase_pk):
+def export_purchase_to_excel(request, pk, purchase_pk):
+
     # Query the Person model to get all records
     customer = get_object_or_404(Customer, pk=pk)
     customer_purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
 
-    # Convert the QuerySet to a DataFrame
-    df = pd.DataFrame(list(map(lambda o: o.get_calculated_data, customer_purchase_orders)))
+    # Convert the QuerySet to a DataFrame3
+    header = [
+        "Изображение",
+        "Наименование",
+        "Ссылка",
+        "Цена ¥",
+        "Курс",
+        "Цена ₽",
+        "Комиссия %",
+        "Комиссия ₽",
+        "Цена"
+    ]
 
-    # Define the Excel file response
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=persons.xlsx'
-
-    # Use Pandas to write the DataFrame to an Excel file
-    df.to_excel(response, index=False, engine='openpyxl')
+    response = export_data_to_excel(customer_purchase_orders, header)
 
     return response

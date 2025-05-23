@@ -1,7 +1,7 @@
 import openpyxl
 
 from django.http import HttpResponse
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 
 
 def export_data_to_excel(qs, header=None, footer=None):
@@ -14,9 +14,15 @@ def export_data_to_excel(qs, header=None, footer=None):
     sheet = wb.active
     current_row = 2 if header else 1
 
+    # Установка стилей
+    bold_font = Font(size=12, bold=True)
+    centered = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
     # Добавление данных
     if header:
         sheet.append(header)
+        for cell in sheet[1]:
+            cell.font = bold_font
 
     for obj in qs:
         if obj.img:
@@ -31,11 +37,7 @@ def export_data_to_excel(qs, header=None, footer=None):
 
         for cell in sheet[current_row]:
             if cell.value is not None:
-                cell.alignment = Alignment(
-                    horizontal="center",
-                    vertical="center",
-                    wrap_text=True,
-                )
+                cell.alignment = centered
 
         current_row += 1
 

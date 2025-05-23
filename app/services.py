@@ -1,13 +1,14 @@
 import openpyxl
 
 from django.http import HttpResponse
+from django.utils.encoding import escape_uri_path
 from openpyxl.styles import Alignment, Font
 
 
-def export_data_to_excel(qs, header=None, footer=None):
+def export_data_to_excel(fname, qs, header=None, footer=None):
     CTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     response = HttpResponse(content_type=CTYPE)
-    response["Content-Disposition"] = "attachment; filename=order.xlsx"
+    response["Content-Disposition"] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
 
     # Создание excel
     wb = openpyxl.Workbook()

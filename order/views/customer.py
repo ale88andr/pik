@@ -228,6 +228,6 @@ def export_purchase_to_excel(request, pk, purchase_pk):
         "Цена"
     ]
 
-    response = export_data_to_excel(customer_purchase_orders, header)
+    response = export_data_to_excel(customer.name, customer_purchase_orders, header)
 
     return response

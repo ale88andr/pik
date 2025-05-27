@@ -1,0 +1,77 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-9 col-sm-12">
+            {% for purchase in orders %}
+            <div class="card z-index-2 h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Участие в закупках</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2 mt-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr role="row" class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                                    <th>Закупка</th>
+                                    <th>Заказы</th>
+                                    <th>Курс</th>
+                                    <th>Сумма ₽</th>
+                                    <th>Сумма ¥</th>
+                                    <th>Комиссия ₽</th>
+                                    <th>Комиссия ¥</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="align-middle text-center">
+                                    <td>
+                                        <h6 class="text-xl">
+                                            <a href={% url 'customer-purchase' pk=customer.pk purchase_pk=purchase.purchase__id %}>
+                                                {{ purchase.purchase__title }}
+                                            </a>
+                                        </h6>
+                                    </td>
+                                    <td><span class="badge bg-gradient-success">{{ purchase.total }}</span></td>
+                                    <td><span class="badge bg-gradient-dark">{{ purchase.purchase__exchange }}</span></td>
+                                    <td><span class="badge bg-gradient-danger">{{ purchase.sum_in_rub }}</span></td>
+                                    <td><span class="badge bg-gradient-secondary">{{ purchase.sum|floatformat:2 }}</span></td>
+                                    <td><span class="badge bg-gradient-danger">{{ purchase.tax_in_rub }}</span></td>
+                                    <td><span class="badge bg-gradient-secondary">{{ purchase.tax|floatformat:2 }}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="col-lg-3 col-sm-12">
+            <div class="card z-index-2 h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">{{ customer.phone|default:'Не указан' }}</h6>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ customer.name }}</h5>
+                    <p class="card-text">
+                        {% if customer.telegram_id %}
+                            <a href="https://t.me/{{ customer.telegram_id }}" target="_blank">{{ customer.telegram_id }}</a>
+                        {% else %}
+                            <span class="text-body-tertiary">Не указан</span>
+                        {% endif %}
+                    </p>
+                    <p class="text-xs font-weight-bold">
+                        Комиссия: <span class="badge bg-warning">{{ customer.tax }}%</span>
+                    </p>
+                    <a href="{% url 'customer_edit' pk=customer.pk %}" class="btn btn-sm btn-primary me-1">
+                        <i class="bi bi-pencil-square"></i> Редактировать
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

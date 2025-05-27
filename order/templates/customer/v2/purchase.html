@@ -1,0 +1,261 @@
+{% extends 'dashboard.html' %}
+
+{% load extras %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-9 col-sm-12">
+        <div class="card z-index-2 h-100">
+            <div class="card-header pt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="text-capitalize">Заказы</h1>
+                    <p>
+                        <a href="{% url 'create-customer-order' pk=customer.pk purchase_pk=purchase.pk %}" class="btn btn-success mt-2">
+                            <i class="bi bi-person-plus"></i> Добавить заказ
+                        </a>
+                        <a href="{% url 'customer-purchase-xls2' pk=customer.pk purchase_pk=purchase.pk %}" class="btn btn-secondary mt-2">
+                            <i class="bi bi-filetype-xls"></i> Экспорт в excel
+                        </a>
+                    </p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2 text-xs font-weight-bold">
+                    Всего: <span class="ms-2 badge bg-gradient-secondary">{{ total }}</span>
+                    {% for item in summary %}
+                        {{ statuses|index:item.status }}:<span class="ms-2 badge bg-gradient-info">{{ item.total }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-1">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr class="text-uppercase text-secondary text-center text-xxs font-weight-bolder opacity-7">
+                                <th scope="col">#</th>
+                                <th scope="col">Скрин</th>
+                                <th scope="col">
+                                    Наименование
+                                    <a href="?sort=phone{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                                    <a href="?sort=-phone{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                                </th>
+                                <th scope="col">
+                                    Цена заказа
+                                    <a href="?sort=telegram_id{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                                    <a href="?sort=-telegram_id{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                                </th>
+                                <th scope="col">Трэк #</th>
+                                <th scope="col">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in orders %}
+                                <tr>
+                                    <th scope="row">
+                                        <p class="text-xs text-secondary mb-0 text-center">{{ forloop.counter }}</p>
+                                    </th>
+                                    <td class="text-center">
+                                        <img
+                                            src="/media/{{item.img}}"
+                                            alt=""
+                                            style="width: 48px"
+                                            data-bs-toggle="offcanvas"
+                                            href="#img-{{ item.id }}"
+                                            role="button"
+                                            aria-controls="show"
+                                        />
+                                        <div class="offcanvas offcanvas-start" tabindex="-1" id="img-{{ item.id }}" aria-labelledby="img-{{ item.id }}Label">
+                                            <div class="offcanvas-header">
+                                                <h4 class="text-start text-primary" id="img-{{ item.id }}Label">{{ item.title }}</h4>
+                                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                            </div>
+                                            <div class="offcanvas-body">
+                                                <img
+                                                    src="/media/{{item.img}}"
+                                                    alt=""
+                                                    style="width: 100%"
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-md-2">
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <p class="text-xl font-weight-bold mb-1">
+                                                    <a href="{% url 'order' pk=item.pk %}">
+                                                        {{ item.title }}
+                                                    </a>
+                                                </p>
+                                                <p class="text-xs mb-2">
+                                                    <a href="{{ item.url }}" target="_blank">Ссылка</a>
+                                                </p>
+                                                <p class="text-xs mb-0">
+                                                    <span class="badge bg-gradient-primary">{{ item.get_status }}</span>
+                                                    <span class="badge badge-sm bg-gradient-secondary">{{ item.marketplace }}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-nowrap align-middle text-center">
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <p class="text-xl font-weight-bold mb-1">
+                                                    {{ item.order_price }} ¥ 
+                                                </p>
+                                                <p class="text-xs mb-2">
+                                                    <span class="badge bg-gradient-secondary">{{ purchase.exchange }}</span>
+                                                </p>
+                                                <p class="text-xs text-danger font-weight-bold mb-0">
+                                                    {{ item.calculate_order_exchange_price }} ₽ 
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-xs">
+                                        {% if item.track_num %}
+                                            <span class="badge bg-gradient-secondary"><a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a></span>
+                                        {% else %}
+                                            Нет
+                                        {%endif%}
+                                    </td>
+                                    <td class="text-xs text-center align-content-center">
+                                        <a href="{% url 'order_edit' pk=item.pk %}" class="me-1">
+                                            <i class="bi bi-pencil-square"></i> Изменить
+                                        </a>
+                                        <a data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </a>
+                                        <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
+                                            <div class="offcanvas-header">
+                                                <h5 class="offcanvas-title" id="{{ item.id }}Label">{{ item.title }}</h5>
+                                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                            </div>
+                                            <div class="offcanvas-body text-start">
+                                                <div>
+                                                    Это действие безвозвратно удалит объект из базы данных!
+                                                </div>
+                                                <div class="mt-3">
+                                                    <a href="{% url 'order_delete' pk=item.pk %}" class="btn btn-danger me-1">Подтвердить</a>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if not item.buy_price %}
+                                            <p>
+                                                <a href="{% url 'order-buy' pk=item.pk %}" class="btn btn-sm btn-primary mt-2">
+                                                    <i class="bi bi-bag me-1"></i> Выкупить товар
+                                                </a>
+                                            </p>
+                                        {% endif %}
+
+                                        {% if item.buy_price and not item.track_num %}
+                                            <p>
+                                                <a href="{% url 'order-set-track' pk=item.pk %}" class="btn btn-sm btn-dark mt-2">
+                                                    <i class="bi bi-truck me-1"></i> Добавить трэк
+                                                </a>
+                                            </p>
+                                        {% else %}
+                                            {% if item.status == 2 %}
+                                                <form method="post" action="{% url 'order-set-delivered' pk=item.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-secondary mt-2">
+                                                        <i class="bi bi-truck me-1"></i>
+                                                        Доставлен в ТК
+                                                    </button>
+                                                </form>
+                                            {% elif item.status == 3 %}
+                                                <form method="post" action="{% url 'order-set-arrived' pk=item.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-success mt-2">
+                                                        <i class="bi bi-bookmark-check"></i> Прибыл
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr class="text-center no-hover">
+                                    <td colspan="6" class="no-hover p-4">
+                                        <svg
+                                            height="45px"
+                                            width="45px"
+                                            version="1.1"
+                                            id="empty"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                            viewBox="0 0 412.533 412.533"
+                                            xml:space="preserve"
+                                        >
+                                            <g>
+                                                <path
+                                                    style="fill:#c1c1c2;"
+                                                    d="M412.485,203.954h0.041c0-14.323-5.609-27.336-14.729-37.042l0.016-0.016l-79.27-101.819H90.479
+                                                    L13.493,168.961l0.033,0.033c-7.283,8.616-11.762,19.565-12.534,31.514C0.415,201.629,0,202.84,0,204.19v135.138
+                                                    c0,4.495,3.642,8.129,8.129,8.129h396.276c4.495,0,8.129-3.633,8.129-8.129V204.19
+                                                    C412.533,204.109,412.485,204.035,412.485,203.954z M97.844,81.335H311.43l48.389,68.5c-0.512-0.016-1-0.081-1.52-0.081h-97.502
+                                                    v24.369c0,27.67-29.052,21.687-37.96,21.687h-32.466c-8.909,0-37.96,5.983-37.96-21.687v-24.369H54.9
+                                                    c-1.016,0-2.008,0.098-3.016,0.146L97.844,81.335z M396.276,331.199H16.265V204.19c0-0.081-0.041-0.154-0.049-0.236h0.723
+                                                    c0-20.923,17.029-37.944,37.96-37.944h81.253v8.112c0,27.987,21.281,37.944,54.218,37.944h32.466
+                                                    c32.945,0,54.218-9.957,54.218-37.944v-8.112h81.261c10.461,0,19.948,4.251,26.824,11.12l0.016,0.016
+                                                    c6.869,6.869,11.112,16.347,11.112,26.808h0.057c0,0.081-0.049,0.154-0.049,0.236C396.276,204.19,396.276,331.199,396.276,331.199z
+                                                    "
+                                                />
+                                            </g>
+                                        </svg>
+                                        <p class="text-body-tertiary">Нет данных</p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-sm-12">
+        <div class="card z-index-2">
+            <div class="card-header py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="text-capitalize">Клиент</h1>
+                    <p>
+                        <a href="{% url 'customer_edit' pk=customer.pk %}" class="btn btn-primary mt-2">
+                            <i class="bi bi-pencil-square"></i> Редактировать
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="card-body">
+                <h4 class="font-weight-bold text-primary">{{ customer.name }}</h4>
+                <h6 class="card-title text-secondary">
+                    {% if customer.phone %}
+                        {{ customer.phone }}
+                    {% else %}
+                        <span class="text-body-tertiary">Не указан</span>
+                    {% endif %}
+                </h6>
+                <p class="card-text">
+                    {% if customer.telegram_id %}
+                        <a href="https://t.me/{{ customer.telegram_id }}" target="_blank">{{ customer.telegram_id }}</a>
+                    {% else %}
+                        <span class="text-body-tertiary">Не указан</span>
+                    {% endif %}
+                </p>
+                <p class="card-text">
+                    Комиссия: <span class="badge bg-warning">{{ customer.tax }}%</span>
+                </p>
+
+                <h6 class="m-0 font-weight-bold text-primary">{{ purchase.title }}</h6>
+
+                <ul class="align-items-center mb-2 text-xs font-weight-bold list-unstyled mt-2">
+                    <li>Всего: <span class="ms-2 badge bg-gradient-secondary">{{ total }}</span></li>
+                    {% for item in summary %}
+                        <li>{{ statuses|index:item.status }}:<span class="ms-2 badge bg-gradient-info">{{ item.total }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

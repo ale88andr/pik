@@ -22,19 +22,29 @@ def list(request):
 
     return render(
         request,
-        "order/list.html",
+        "order/v2/list.html",
         {
             "form": form,
             "search_query": query,
             "records": orders,
-            "total": orders.count()
+            "total": orders.count(),
+            "page_section": "Заказы",
+            "page_title": "Список заказов"
         }
     )
 
 
 def detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
-    return render(request, "order/detail.html", {"order": order})
+    return render(
+    request, 
+    "order/v2/detail.html", 
+    {
+        "order": order,
+        "page_section": "Заказы",
+        "page_title": order
+    }
+)
 
 
 def create(request):
@@ -53,7 +63,7 @@ def create(request):
     else:
         form = CreateOrderForm()
 
-    return render(request, "order/form.html", {"form": form, "is_new": True})
+    return render(request, "order/v2/form.html", {"form": form, "is_new": True})
 
 
 def edit(request, pk):
@@ -69,7 +79,7 @@ def edit(request, pk):
         obj = get_object_or_404(Order, pk=pk)
         form = OrderForm(model_to_dict(obj))
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/v2/form.html", {"form": form})
 
 
 def buy(request, pk):
@@ -86,7 +96,7 @@ def buy(request, pk):
     else:
         form = BuyOrderForm(model_to_dict(order))
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/v2/form.html", {"form": form})
 
 
 def set_track_num(request, pk):
@@ -103,7 +113,7 @@ def set_track_num(request, pk):
     else:
         form = SetTrackNumOrderForm(model_to_dict(order))
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/v2/form.html", {"form": form})
 
 
 def set_delivered(request, pk):

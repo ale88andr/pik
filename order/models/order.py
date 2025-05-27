@@ -75,12 +75,14 @@ class Order(models.Model):
             "",
             self.title,
             self.url,
+            self.get_status,
             self.order_price,
             self.purchase.exchange,
             self.calculate_order_exchange_price(),
             f'{self.customer.tax} %',
             self.calculate_difference_tax(),
-            self.calculate_order_exchange_price() + self.calculate_difference_tax()
+            self.calculate_order_exchange_price() + self.calculate_difference_tax(),
+            self.customer.name
         ]
 
     def calculate_weight(self):

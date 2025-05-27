@@ -3,6 +3,7 @@ from django.forms import model_to_dict
 from django.db.models import Sum, Count
 from django.contrib import messages
 
+from app.services import export_data_to_excel
 from order.forms.order import CreatePurchaseOrderForm
 from order.forms.purchase import PurchaseInitialForm, PurchaseEditForm, PurchaseCloseForm, PurchaseSearchForm
 from order.forms.search import SearchForm
@@ -26,12 +27,14 @@ def list(request):
 
     return render(
         request,
-        "purchase/list.html",
+        "purchase/v2/list.html",
         {
             "form": form,
             "search_query": query,
             "records": orders,
-            "total": orders.count()
+            "total": orders.count(),
+            "page_section": "Закупки",
+            "page_title": "Список закупок"
         }
     )
 
@@ -49,7 +52,7 @@ def detail(request, pk):
             search = search_form.cleaned_data["query"]
             customer_id = search_form.cleaned_data["customer"]
             marketplace_id = search_form.cleaned_data["marketplace"]
-            status = int(search_form.cleaned_data["status"]) if search_form.cleaned_data["status"] is not None else None
+            status = int(search_form.cleaned_data["status"]) if search_form.cleaned_data["status"] else None
 
             if search:
                 search_orders = search_orders.search(query=search)
@@ -60,7 +63,7 @@ def detail(request, pk):
             if marketplace_id:
                 search_orders = search_orders.filter(marketplace=marketplace_id)
 
-            if status and status >= 0:
+            if status is not None:
                 search_orders = search_orders.filter(status=status)
 
             search_orders = search_orders.filter(purchase=pk)
@@ -73,6 +76,7 @@ def detail(request, pk):
         number_of_orders=Count("pk", distinct=True),
         orders_weight=Sum("weight"),
     )
+    summary = orders.values("status").annotate(total=Count("id"))
 
     total = orders_info.get("total_amount", 0) or 0
 
@@ -85,7 +89,7 @@ def detail(request, pk):
 
     return render(
         request,
-        "purchase/detail.html",
+        "purchase/v2/detail.html",
         {
             "purchase": purchase,
             "records": records,
@@ -95,7 +99,11 @@ def detail(request, pk):
             "total_tax_amount": total_tax_amount,
             "total_dif_amount": total_dif_amount,
             "total_profit": total_profit,
-            "form": search_form
+            "form": search_form,
+            "page_section": "Закупки",
+            "page_title": purchase.title,
+            "summary": summary,
+            "statuses": Order.Status.labels
         }
     )
 
@@ -110,7 +118,15 @@ def create(request):
     else:
         form = PurchaseInitialForm()
 
-    return render(request, "purchase/form.html", {"form": form})
+    return render(
+        request, 
+        "purchase/v2/form.html", 
+        {
+            "form": form,
+            "page_section": "Закупки",
+            "page_title": "Создание новой закупки"
+        }
+    )
 
 
 def create_purchase_order(request, pk):
@@ -132,7 +148,7 @@ def create_purchase_order(request, pk):
     else:
         form = CreatePurchaseOrderForm()
 
-    return render(request, "order/form.html", {"form": form, "is_new": True})
+    return render(request, "order/v2/form.html", {"form": form, "is_new": True})
 
 
 def edit(request, pk):
@@ -149,10 +165,29 @@ def edit(request, pk):
         purchase = get_object_or_404(Purchase, pk=pk)
         form = PurchaseEditForm(model_to_dict(purchase))
 
-    return render(request, "purchase/form.html", {"form": form})
+    return render(
+        request, 
+        "purchase/v2/form.html", 
+        {
+            "form": form,
+            "page_section": "Закупки",
+            "page_title": "Редактирование данных закупки"
+        }
+    )
 
 
 def delete(request, pk):
     customer = get_object_or_404(Purchase, pk=pk)
     customer.delete()
     return redirect("purchases")
+
+
+def export_purchase_to_excel(request, pk):
+
+    # Query the Person model to get all records
+    purchase = get_object_or_404(Purchase, pk=pk)
+    purchase_orders = purchase.purchase_orders.order_by("customer_id")
+
+    response = export_data_to_excel(purchase.title, purchase_orders)
+
+    return response

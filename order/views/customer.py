@@ -1,6 +1,3 @@
-import io
-import pandas as pd
-
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import model_to_dict
@@ -22,6 +19,7 @@ from order.forms.order import CreatePurchaseCustomerOrderForm
 from order.forms.search import SearchForm
 from order.models.customer import Customer
 from order.models.marketplace import Marketplace
+from order.models.order import Order
 from order.models.purchase import Purchase
 from app.settings import STATIC_ROOT
 
@@ -41,8 +39,15 @@ def index(request):
 
     return render(
         request,
-        "customer/list.html",
-        {"form": form, "search_query": query, "customers": customers, "total": customers.count()}
+        "customer/v2/list.html",
+        {
+            "form": form, 
+            "search_query": query, 
+            "customers": customers, 
+            "total": customers.count(),
+            "page_section": "Клиенты",
+            "page_title": "Список клиентов"
+        }
     )
 
 
@@ -65,7 +70,16 @@ def detail(request, pk):
         purchase["tax"] = round(purchase.get("tax"), 2)
         purchase["tax_in_rub"] = round(purchase.get("tax") * purchase.get("purchase__exchange"), 2)
 
-    return render(request, "customer/detail.html", {"customer": customer, "orders": purchases})
+    return render(
+        request, 
+        "customer/v2/detail.html", 
+        {
+            "customer": customer, 
+            "orders": purchases,
+            "page_section": "Клиенты",
+            "page_title": customer
+        }
+    )
 
 
 def create(request):
@@ -78,7 +92,15 @@ def create(request):
     else:
         form = CustomerForm()
 
-    return render(request, "customer/form.html", {"form": form})
+    return render(
+        request, 
+        "customer/v2/form.html", 
+        {
+            "form": form,
+            "page_section": "Клиенты",
+            "page_title": "Добавление нового клиента"
+        }
+    )
 
 
 def create_order(request, pk, purchase_pk):
@@ -101,7 +123,16 @@ def create_order(request, pk, purchase_pk):
     else:
         form = CreatePurchaseCustomerOrderForm()
 
-    return render(request, "order/form.html", {"form": form, "is_new": True})
+    return render(
+        request, 
+        "order/v2/form.html", 
+        {
+            "form": form, 
+            "is_new": True,
+            "page_section": "Клиенты",
+            "page_title": "Добавление нового клиента"
+        }
+    )
 
 
 def edit(request, pk):
@@ -115,7 +146,15 @@ def edit(request, pk):
         customer = get_object_or_404(Customer, pk=pk)
         form = CustomerForm(model_to_dict(customer))
 
-    return render(request, "customer/form.html", {"form": form})
+    return render(
+        request, 
+        "customer/v2/form.html", 
+        {
+            "form": form,
+            "page_section": "Клиенты",
+            "page_title": "Изменение данных клиента"
+        }
+    )
 
 
 def delete(request, pk):
@@ -128,15 +167,20 @@ def purchase(request, pk, purchase_pk):
     customer = get_object_or_404(Customer, pk=pk)
     purchase = get_object_or_404(Purchase, pk=purchase_pk)
     purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
+    summary = purchase_orders.values("status").annotate(total=Count("id"))
 
     return render(
         request,
-        "customer/purchase2.html",
+        "customer/v2/purchase.html",
         {
             "customer": customer,
             "orders": purchase_orders,
             "purchase": purchase,
-            "total": purchase_orders.count()
+            "total": purchase_orders.count(),
+            "summary": summary,
+            "statuses": Order.Status.labels,
+            "page_section": "Клиенты",
+            "page_title": f"{customer}: {purchase}"
         })
 
 
@@ -215,19 +259,6 @@ def export_purchase_to_excel(request, pk, purchase_pk):
     customer = get_object_or_404(Customer, pk=pk)
     customer_purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
 
-    # Convert the QuerySet to a DataFrame3
-    header = [
-        "Изображение",
-        "Наименование",
-        "Ссылка",
-        "Цена ¥",
-        "Курс",
-        "Цена ₽",
-        "Комиссия %",
-        "Комиссия ₽",
-        "Цена"
-    ]
-
-    response = export_data_to_excel(customer.name, customer_purchase_orders, header)
+    response = export_data_to_excel(customer.name, customer_purchase_orders)
 
     return response

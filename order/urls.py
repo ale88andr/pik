@@ -1,4 +1,6 @@
 from django.urls import path
+
+from order.views import dashboard
 from .views import customer
 from .views import order
 from .views import purchase
@@ -34,4 +36,8 @@ urlpatterns = [
     path('purchases/<int:pk>/new-order', purchase.create_purchase_order, name="create-purchase-order"),
     path('purchases/<int:pk>/', purchase.detail, name="purchase"),
     path('purchases/new/', purchase.create, name="create-purchase"),
+    path('purchases/<int:pk>/export/xls', purchase.export_purchase_to_excel, name='purchase-xls'),
+    
+    # dashboard
+    path('dashboard/', dashboard.index, name="dashboard"),
 ]

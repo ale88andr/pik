@@ -5,7 +5,22 @@ from django.utils.encoding import escape_uri_path
 from openpyxl.styles import Alignment, Font
 
 
-def export_data_to_excel(fname, qs, header=None, footer=None):
+ORDERS_HEADER = [
+    "Изображение",
+    "Наименование",
+    "Ссылка",
+    "Статус",
+    "Цена ¥",
+    "Курс",
+    "Цена ₽",
+    "Комиссия %",
+    "Комиссия ₽",
+    "Цена",
+    "Заказчик",
+]
+
+
+def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None):
     CTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     response = HttpResponse(content_type=CTYPE)
     response["Content-Disposition"] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
@@ -48,6 +63,8 @@ def export_data_to_excel(fname, qs, header=None, footer=None):
     sheet.column_dimensions["A"].width = 15
     sheet.column_dimensions["B"].width = 30
     sheet.column_dimensions["C"].width = 30
+    sheet.column_dimensions["D"].width = 20
+    sheet.column_dimensions["K"].width = 20
 
     wb.save(response)
 

@@ -60,7 +60,7 @@
                                         <div class="d-flex px-2 py-1">
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">
-                                                    <a href="{% url 'purchase' pk=item.pk %}">
+                                                    <a class="link-primary" href="{% url 'purchase' pk=item.pk %}">
                                                         <strong>{{ item.title }}</strong>
                                                     </a>
                                                 </h6>
@@ -139,14 +139,12 @@
                                             {% endif %}
                                         </p>
                                     </td>
-                                    <td class="align-middle">
-                                        <a href="{% url 'edit-purchase' pk=item.pk %}" class="font-weight-bold text-xs me-1">
-                                            <i class="bi bi-pencil-square me-1"></i>
-                                            Изменить
+                                    <td class="align-middle text-xs">
+                                        <a class="link-secondary me-1" href="{% url 'edit-purchase' pk=item.pk %}">
+                                            <i class="bi bi-pencil-square me-1"></i> Изменить
                                         </a>
-                                        <a class="font-weight-bold text-xs" data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
-                                            <i class="bi bi-trash me-1"></i>
-                                            Удалить
+                                        <a class="link-danger" data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
+                                            <i class="bi bi-trash me-1"></i> Удалить
                                         </a>
                                         <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
                                             <div class="offcanvas-header">

@@ -1,5 +1,7 @@
 {% extends 'dashboard.html' %}
 
+{% load extras %}
+
 {% block content %}
 
 <div class="row">
@@ -80,22 +82,26 @@
                                                     <span class="badge bg-gradient-primary">{{ item.get_status }}</span>
                                                     <span class="badge badge-sm bg-gradient-secondary">{{ item.marketplace }}</span>
                                                 </p>
+                                                <div>
+                                                    <span class="me-2 text-xs font-weight-bold">{{item.status|add:1|multiply:20}}%</span>
+                                                    <div class="progress">
+                                                      <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="{{item.status}}" aria-valuemin="0" aria-valuemax="5" style="width: {{item.status|add:1|multiply:20}}%;"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <p class="text-xl font-weight-bold mb-1">
-                                                    {{ item.order_price }} ¥ 
-                                                </p>
-                                                <p class="text-xs mb-2">
-                                                    <span class="badge bg-gradient-secondary">{{ item.purchase.exchange }}</span>
-                                                </p>
-                                                <p class="text-xs text-danger font-weight-bold mb-0">
-                                                    {{ item.calculate_order_exchange_price }} ₽ 
-                                                </p>
-                                            </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <p class="text-xl font-weight-bold mb-1">
+                                                {{ item.order_price }} ¥ 
+                                            </p>
+                                            <p class="text-xs mb-2">
+                                                <span class="badge bg-gradient-secondary">{{ item.purchase.exchange }}</span>
+                                            </p>
+                                            <p class="text-xs text-danger font-weight-bold mb-0">
+                                                {{ item.calculate_order_exchange_price }} ₽ 
+                                            </p>
                                         </div>
                                     </td>
                                     <td class="align-middle text-center">
@@ -132,10 +138,10 @@
                                     </td>
                                     <td class="text-xs text-center align-content-center">
                                         <a href="{% url 'order_edit' pk=item.pk %}" class="me-1">
-                                            <i class="bi bi-pencil-square"></i> Изменить
+                                            <i class="bi bi-pencil-square me-1"></i>Изменить
                                         </a>
                                         <a data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
-                                            <i class="bi bi-trash"></i> Удалить
+                                            <i class="bi bi-trash me-1"></i>Удалить
                                         </a>
                                         <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
                                             <div class="offcanvas-header">

@@ -25,7 +25,6 @@ class PurchaseEditForm(BaseForm):
             "dilivery_cost1",
             "dilivery_cost2",
             "other_expenses",
-            "exchange"
         )
 
 

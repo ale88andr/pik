@@ -148,12 +148,22 @@ def create_purchase_order(request, pk):
     else:
         form = CreatePurchaseOrderForm()
 
-    return render(request, "order/v2/form.html", {"form": form, "is_new": True})
+    return render(
+        request, 
+        "order/v2/form.html", 
+        {
+            "form": form, 
+            "is_new": True,
+            "page_section": "Закупки",
+            "page_title": "Добавление нового заказа"
+        }
+    )
 
 
 def edit(request, pk):
+    obj = get_object_or_404(Purchase, pk=pk)
+    
     if request.method == "POST":
-        obj = get_object_or_404(Purchase, id=pk)
         form = PurchaseEditForm(request.POST, instance=obj)
         if form.is_valid():
             form.save()
@@ -161,9 +171,7 @@ def edit(request, pk):
             messages.success(request, "Данные закупки обновлены!")
             return redirect("purchase", pk=obj.pk)
     else:
-        messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
-        purchase = get_object_or_404(Purchase, pk=pk)
-        form = PurchaseEditForm(model_to_dict(purchase))
+        form = PurchaseEditForm(model_to_dict(obj))
 
     return render(
         request, 

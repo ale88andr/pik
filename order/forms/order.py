@@ -1,5 +1,3 @@
-from django import forms
-
 from order.forms.base import BaseForm
 from order.models.order import Order
 

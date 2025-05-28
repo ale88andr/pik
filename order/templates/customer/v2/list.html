@@ -63,7 +63,7 @@
                                         <div class="d-flex px-2 py-1">
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">
-                                                    <a href="{% url 'customer' pk=customer.pk %}">
+                                                    <a class="link-primary" href="{% url 'customer' pk=customer.pk %}">
                                                         {{ customer.name }}
                                                     </a>
                                                 </h6>
@@ -79,7 +79,7 @@
                                     </td>
                                     <td class="align-middle text-xs text-center font-weight-bold">
                                         {% if customer.telegram_id %}
-                                            <a href="https://t.me/{{ customer.telegram_id }}" target="_blank">{{ customer.telegram_id }}</a>
+                                            <a class="link-secondary" href="https://t.me/{{ customer.telegram_id }}" target="_blank">{{ customer.telegram_id }}</a>
                                         {% else %}
                                             <span class="text-body-tertiary">Не указан</span>
                                         {% endif %}
@@ -88,11 +88,11 @@
                                         <span class="badge rounded-pill bg-gradient-danger">{{ customer.tax }} %</span>
                                     </td>
                                     <td class="align-middle text-xs text-center">
-                                        <a href="{% url 'customer_edit' pk=customer.pk %}" class="me-1">
-                                            <i class="bi bi-pencil-square"></i> Изменить
+                                        <a href="{% url 'customer_edit' pk=customer.pk %}" class="link-secondary me-1">
+                                            <i class="bi bi-pencil-square me-1"></i>Изменить
                                         </a>
-                                        <a data-bs-toggle="offcanvas" href="#{{ customer.id }}" role="button" aria-controls="delete">
-                                            <i class="bi bi-trash"></i> Удалить
+                                        <a class="link-danger" data-bs-toggle="offcanvas" href="#{{ customer.id }}" role="button" aria-controls="delete">
+                                            <i class="bi bi-trash me-1"></i>Удалить
                                         </a>
                                         <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ customer.id }}" aria-labelledby="{{ customer.id }}Label">
                                             <div class="offcanvas-header">

@@ -63,12 +63,22 @@ def create(request):
     else:
         form = CreateOrderForm()
 
-    return render(request, "order/v2/form.html", {"form": form, "is_new": True})
+    return render(
+        request, 
+        "order/v2/form.html", 
+        {
+            "form": form, 
+            "is_new": True,
+            "page_section": "Заказы",
+            "page_title": "Добавление нового заказа"
+        }
+    )
 
 
 def edit(request, pk):
+    obj = get_object_or_404(Order, id=pk)
+    
     if request.method == "POST":
-        obj = get_object_or_404(Order, id=pk)
         form = OrderForm(request.POST, files=request.FILES, instance=obj)
         if form.is_valid():
             form.save()
@@ -76,10 +86,17 @@ def edit(request, pk):
             messages.success(request, "Данные заказа обновлены!")
             return redirect("order", pk=obj.pk)
     else:
-        obj = get_object_or_404(Order, pk=pk)
         form = OrderForm(model_to_dict(obj))
 
-    return render(request, "order/v2/form.html", {"form": form})
+    return render(
+        request, 
+        "order/v2/form.html", 
+        {
+            "form": form,
+            "page_section": "Заказы",
+            "page_title": f"Редактирование данных заказа: {obj}"
+        }
+    )
 
 
 def buy(request, pk):

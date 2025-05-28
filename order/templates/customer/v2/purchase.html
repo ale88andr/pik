@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-lg-9 col-sm-12">
+    <div class="col-lg-9 col-xl-9 col-12">
         <div class="card z-index-2 h-100">
             <div class="card-header pt-3">
                 <div class="d-flex justify-content-between align-items-center">
@@ -81,7 +81,7 @@
                                         <div class="d-flex px-2 py-1">
                                             <div class="d-flex flex-column justify-content-center">
                                                 <p class="text-xl font-weight-bold mb-1">
-                                                    <a href="{% url 'order' pk=item.pk %}">
+                                                    <a class="link-primary" href="{% url 'order' pk=item.pk %}">
                                                         {{ item.title }}
                                                     </a>
                                                 </p>
@@ -92,85 +92,93 @@
                                                     <span class="badge bg-gradient-primary">{{ item.get_status }}</span>
                                                     <span class="badge badge-sm bg-gradient-secondary">{{ item.marketplace }}</span>
                                                 </p>
+                                                <div class="d-flex align-items-center mt-2">
+                                                    <span class="me-2 text-xs font-weight-bold">{{item.status|add:1|multiply:20}}%</span>
+                                                    <div class="progress">
+                                                      <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="{{item.status}}" aria-valuemin="0" aria-valuemax="5" style="width: {{item.status|add:1|multiply:20}}%;"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="text-nowrap align-middle text-center">
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <p class="text-xl font-weight-bold mb-1">
-                                                    {{ item.order_price }} ¥ 
-                                                </p>
-                                                <p class="text-xs mb-2">
-                                                    <span class="badge bg-gradient-secondary">{{ purchase.exchange }}</span>
-                                                </p>
-                                                <p class="text-xs text-danger font-weight-bold mb-0">
-                                                    {{ item.calculate_order_exchange_price }} ₽ 
-                                                </p>
-                                            </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <p class="text-xl font-weight-bold mb-1">
+                                                {{ item.order_price }} ¥ 
+                                            </p>
+                                            <p class="text-xs mb-2">
+                                                <span class="badge bg-gradient-secondary">{{ purchase.exchange }}</span>
+                                            </p>
+                                            <p class="text-xs text-danger font-weight-bold mb-0">
+                                                {{ item.calculate_order_exchange_price }} ₽ 
+                                            </p>
                                         </div>
                                     </td>
                                     <td class="text-xs">
                                         {% if item.track_num %}
-                                            <span class="badge bg-gradient-secondary"><a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a></span>
+                                            <span class="badge bg-gradient-info"><a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a></span>
                                         {% else %}
                                             Нет
                                         {%endif%}
                                     </td>
-                                    <td class="text-xs text-center align-content-center">
-                                        <a href="{% url 'order_edit' pk=item.pk %}" class="me-1">
-                                            <i class="bi bi-pencil-square"></i> Изменить
-                                        </a>
-                                        <a data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
-                                            <i class="bi bi-trash"></i> Удалить
-                                        </a>
-                                        <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
-                                            <div class="offcanvas-header">
-                                                <h5 class="offcanvas-title" id="{{ item.id }}Label">{{ item.title }}</h5>
-                                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                            </div>
-                                            <div class="offcanvas-body text-start">
-                                                <div>
-                                                    Это действие безвозвратно удалит объект из базы данных!
+                                    <td class="text-xs align-middle text-center">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <a class="link-secondary" href="{% url 'order_edit' pk=item.pk %}" class="me-1">
+                                                    <i class="bi bi-pencil-square me-1"></i>Изменить
+                                                </a>
+                                                <a class="link-danger" data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
+                                                    <i class="bi bi-trash me-1"></i>Удалить
+                                                </a>
+                                                <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
+                                                    <div class="offcanvas-header">
+                                                        <h5 class="offcanvas-title" id="{{ item.id }}Label">{{ item.title }}</h5>
+                                                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="offcanvas-body text-start">
+                                                        <div>
+                                                            Это действие безвозвратно удалит объект из базы данных!
+                                                        </div>
+                                                        <div class="mt-3">
+                                                            <a href="{% url 'order_delete' pk=item.pk %}" class="btn btn-danger me-1">Подтвердить</a>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="mt-3">
-                                                    <a href="{% url 'order_delete' pk=item.pk %}" class="btn btn-danger me-1">Подтвердить</a>
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
-                                                </div>
+                                                {% if not item.buy_price %}
+                                                    <p>
+                                                        <a href="{% url 'order-buy' pk=item.pk %}" class="btn btn-sm btn-primary mt-2">
+                                                            <i class="bi bi-bag me-1"></i> Выкупить товар
+                                                        </a>
+                                                    </p>
+                                                {% endif %}
+
+                                                {% if item.buy_price and not item.track_num %}
+                                                    <p>
+                                                        <a href="{% url 'order-set-track' pk=item.pk %}" class="btn btn-sm btn-dark mt-2">
+                                                            <i class="bi bi-truck me-1"></i> Добавить трэк
+                                                        </a>
+                                                    </p>
+                                                {% else %}
+                                                    {% if item.status == 2 %}
+                                                        <form method="post" action="{% url 'order-set-delivered' pk=item.pk %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-secondary mt-2">
+                                                                <i class="bi bi-truck me-1"></i>
+                                                                Доставлен в ТК
+                                                            </button>
+                                                        </form>
+                                                    {% elif item.status == 3 %}
+                                                        <form method="post" action="{% url 'order-set-arrived' pk=item.pk %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-success mt-2">
+                                                                <i class="bi bi-bookmark-check"></i> Прибыл
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                {% endif %}
                                             </div>
                                         </div>
-                                        {% if not item.buy_price %}
-                                            <p>
-                                                <a href="{% url 'order-buy' pk=item.pk %}" class="btn btn-sm btn-primary mt-2">
-                                                    <i class="bi bi-bag me-1"></i> Выкупить товар
-                                                </a>
-                                            </p>
-                                        {% endif %}
-
-                                        {% if item.buy_price and not item.track_num %}
-                                            <p>
-                                                <a href="{% url 'order-set-track' pk=item.pk %}" class="btn btn-sm btn-dark mt-2">
-                                                    <i class="bi bi-truck me-1"></i> Добавить трэк
-                                                </a>
-                                            </p>
-                                        {% else %}
-                                            {% if item.status == 2 %}
-                                                <form method="post" action="{% url 'order-set-delivered' pk=item.pk %}">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-sm btn-secondary mt-2">
-                                                        <i class="bi bi-truck me-1"></i>
-                                                        Доставлен в ТК
-                                                    </button>
-                                                </form>
-                                            {% elif item.status == 3 %}
-                                                <form method="post" action="{% url 'order-set-arrived' pk=item.pk %}">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-sm btn-success mt-2">
-                                                        <i class="bi bi-bookmark-check"></i> Прибыл
-                                                    </button>
-                                                </form>
-                                            {% endif %}
-                                        {% endif %}
                                     </td>
                                 </tr>
                             {% empty %}
@@ -213,7 +221,7 @@
         </div>
     </div>
 
-    <div class="col-lg-3 col-sm-12">
+    <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
         <div class="card z-index-2">
             <div class="card-header py-3">
                 <div class="d-flex justify-content-between align-items-center">

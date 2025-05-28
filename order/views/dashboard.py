@@ -6,6 +6,7 @@ def index(request):
         request,
         "dashboard/index.html",
         {
-            "page_title": "Панель"
+            "page_title": "Панель",
+            "page_section": "Обзор",
         }
     )

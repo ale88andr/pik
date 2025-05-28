@@ -136,15 +136,17 @@ def create_order(request, pk, purchase_pk):
 
 
 def edit(request, pk):
+    obj = get_object_or_404(Customer, id=pk)
+    
     if request.method == "POST":
-        obj = get_object_or_404(Customer, id=pk)
-        form = CustomerForm(request.POST, files=request.FILES, instance=obj)
+        form = CustomerForm(request.POST, instance=obj)
         if form.is_valid():
             form.save()
+            
+            messages.success(request, "Данные клиента обновлены!")
             return redirect("customer", pk=obj.pk)
     else:
-        customer = get_object_or_404(Customer, pk=pk)
-        form = CustomerForm(model_to_dict(customer))
+        form = CustomerForm(model_to_dict(obj))
 
     return render(
         request, 

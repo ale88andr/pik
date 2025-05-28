@@ -1,105 +1,165 @@
 {% extends 'dashboard.html' %}
 
+{% load extras %}
+
 {% block content %}
     <div class="row">
-        <div class="col-xl-9">
+        <div class="col-lg-9 col-xl-9 col-12">
             <!-- Order details card-->
-            <div class="card mb-4">
+            <div class="card z-index-2 h-100">
                 <div class="card-header pb-0 pt-3 bg-transparent">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="text-capitalize">Данные заказа</h1>
                         <p>
-                            <a href="{% url 'order_edit' pk=order.pk %}" class="btn btn-primary me-1">
-                                <i class="bi bi-pencil-square"></i> Редактировать заказ
+                            <a href="{% url 'order_edit' pk=order.pk %}" class="btn btn-primary ms-auto">
+                                <i class="bi bi-pencil-square"></i> Изменить заказ
                             </a>
                         </p>
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <p>
-                        <span class="badge bg-info">{{ order.get_status }}</span>
-                    </p>
-                    <h4 class="text-primary">Оформление заказа</h4>
-                    <hr>
-                    <table class="table table-th-block">
-                        <tbody>
-                            <tr>
-                                <td class="active" style="width: 20%">Наименование:</td>
-                                <td colspan="2"><strong>{{ order.title }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td class="active">Ссылка:</td>
-                                <td colspan="2"><p class="fw-bold mb-1"><a href="{{ order.url }}" target="_blank">{{ order.url }}</a></p></td>
-                            </tr>
-                            <tr>
-                                <td class="active">Цена:</td>
-                                <td><span class="badge bg-info">{{ order.order_price }} ¥</span></td>
-                                <td><span class="badge bg-danger">{{ order.calculate_order_exchange_price }} ₽</span></td>
-                            </tr>
-                            <tr>
-                                <td class="active">Курс:</td>
-                                <td colspan="2"><span class="badge bg-dark">{{ order.exchange_rate }}</span></td>
-                            </tr>
-                            <tr>
-                                <td class="active">Заказчик:</td>
-                                <td colspan="2"><a href="{% url 'customer' pk=order.customer.pk %}"><strong>{{ order.customer }}</strong></a></td>
-                            </tr>
-                            <tr>
-                                <td class="active">Площадка:</td>
-                                <td colspan="2"><span class="badge bg-primary">{{ order.marketplace }}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="card-body pt-0">
 
-                    <h4 class="text-primary">Выкуп заказа</h4>
-                    <hr>
-                    <table class="table table-th-block">
-                        <tbody>
-                            <tr>
-                                <td class="active" style="width: 20%">Цена:</td>
-                                <td><span class="badge bg-info">¥ {{ order.buy_price }}</span></td>
-                                <td><span class="badge bg-danger">₽ {{ order.calculate_buy_exchange_price }}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h4 class="text-primary">Доставка заказа</h4>
-                    <hr>
-                    <table class="table table-th-block">
-                        <tbody>
-                            <tr><td class="active" style="width: 20%">Трек #:</td><td><span class="badge bg-primary">{{ order.track_num|default:"Не присвоен" }}</span></td></tr>
-                        </tbody>
-                    </table>
-
-                    <h4 class="text-primary">Доход с заказа</h4>
-                    <hr>
-                    <table class="table table-th-block">
-                        <tbody>
-                            <tr>
-                                <td class="active" style="width: 20%">Коммиссия:</td>
-                                <td><span class="badge bg-info">¥ {{ order.tax }}</span></td>
-                                <td><span class="badge bg-danger">₽ {% if order.tax %}{{ order.calculate_difference_tax }}{% else %}0{% endif %}</span></td>
-                            </tr>
-
-                            <tr>
-                                <td class="active">Выкуп:</td>
-                                <td><span class="badge bg-info">¥ {% if order.difference %}{{ order.difference }}{% else %}0{% endif %}</span></td>
-                                <td><span class="badge bg-danger">₽ {% if order.difference %}{{ order.calculate_difference }}{% else %}0{% endif %}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h3 class="text-dark">
+                        {{ order.title }}
+                        <span class="badge text-xs bg-gradient-warning">{{ order.get_status }}</span>
+                    </h3>
                     
-                    </form>
+                    <p class="text-uppercase text-sm mt-4">Сведения при оформлении заказа</p>
+
+                    <div class="mt-4">
+                        <h6>
+                            <span class="font-weight-light">Наименование: </span>{{ order.title }}
+                        </h6>
+                        <div class="h6 font-weight-300">
+                            <span class="font-weight-light">Закупка: </span><a class="link-primary" href="{% url 'purchase' pk=order.purchase.pk %}">{{ order.purchase }}</a>
+                        </div>
+                        <div class="h6 font-weight-300">
+                            <span class="font-weight-light">Заказчик: </span><a class="link-primary" href="{% url 'customer' pk=order.customer.pk %}">{{ order.customer }}</a>
+                        </div>
+                        <div class="h6 mt-2">
+                            <span class="font-weight-light">Платформа: </span><span class="badge bg-gradient-success">{{ order.marketplace }}</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="font-weight-light">Ссылка: </span><a class="link-success" href="{{ order.url }}" target="_blank">{{ order.url }}</a>
+                        </div>
+                        <div class="mt-2">
+                            <span class="font-weight-light">Вес: </span>{%if order.weight > 0%}{{ order.weight }}{%else%}Нет данных{%endif%}
+                        </div>
+                        <div class="mt-2">
+                            <span class="font-weight-light">Дата добавления: </span>{{ order.created_at }}
+                        </div>
+                    </div>
+
+                    <p class="text-uppercase text-sm mt-4">Сведения о выкупе заказа</p>
+
+                    <div class="d-flex justify-content-center">
+                        <div class="d-grid text-center">
+                            <p>
+                                <span class="badge bg-gradient-secondary">{{ order.purchase.exchange }}</span>
+                            </p>
+                            <span class="text-sm opacity-8">Курс закупки</span>
+                        </div>
+
+                        <div class="d-grid text-center mx-3">
+                            <p>
+                                <span class="text-xl text-secondary font-weight-bolder">{{ order.order_price }} ¥</span> | 
+                                <span class="text-xl text-warning font-weight-bolder">{{ order.calculate_order_exchange_price }} ₽</span>
+                            </p>
+                            <span class="text-sm opacity-8">Цена при оформлении</span>
+                        </div>
+
+                        <div class="d-grid text-center mx-3">
+                            <p>
+                                <span class="badge bg-gradient-secondary">{{ order.exchange_rate }}</span>
+                            </p>
+                            <span class="text-sm opacity-8">Курс выкупа</span>
+                        </div>
+
+                        <div class="d-grid text-center mx-3">
+                            <p>
+                                <span class="text-xl text-secondary font-weight-bolder">{{ order.buy_price }} ¥</span> | 
+                                <span class="text-xl text-warning font-weight-bolder">{{ order.calculate_buy_exchange_price }} ₽</span>
+                            </p>
+                            <span class="text-sm opacity-8">Цена при выкупе</span>
+                        </div>
+                        <div class="d-grid text-center mx-3">
+                            <p>
+                                <span class="text-xl text-secondary font-weight-bolder">{{ order.tax }} ¥</span> | 
+                                <span class="text-xl text-success font-weight-bolder">{% if order.tax %}{{ order.calculate_difference_tax }}{% else %}0{% endif %} ₽</span>
+                            </p>
+                            <span class="text-sm opacity-8">Комиссия</span>
+                        </div>
+                        <div class="d-grid text-center mx-3">
+                            <p>
+                                <span class="text-xl text-secondary font-weight-bolder">{% if order.difference %}{{ order.difference }}{% else %}0{% endif %} ¥</span> | 
+                                <span class="text-xl text-success font-weight-bolder">{% if order.difference %}{{ order.calculate_difference }}{% else %}0{% endif %} ₽</span>
+                            </p>
+                            <span class="text-sm opacity-8">Доход при выкупе</span>
+                        </div>
+                        <div class="d-grid text-center">
+                            <p>
+                                <span class="badge bg-gradient-primary">{{ order.track_num|default:"Не присвоен" }}</span>
+                            </p>
+                            <span class="text-sm opacity-8">Трек #</span>
+                        </div>
+                    </div>
+
+                    <p class="text-uppercase text-sm mt-4">Доступные действия</p>
+
+                    <div class="d-flex">
+                        {% if not item.buy_price %}
+                            <p>
+                                <a href="{% url 'order-buy' pk=order.pk %}" class="btn btn-primary mt-1">
+                                    <i class="bi bi-bag me-1"></i> Выкупить товар
+                                </a>
+                            </p>
+                        {% endif %}
+
+                        {% if item.buy_price and not item.track_num %}
+                            <p>
+                                <a href="{% url 'order-set-track' pk=order.pk %}" class="btn btn-dark mt-1">
+                                    <i class="bi bi-truck me-1"></i> Добавить трэк
+                                </a>
+                            </p>
+                        {% else %}
+                            {% if item.status == 2 %}
+                                <form method="post" action="{% url 'order-set-delivered' pk=order.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-secondary mt-1">
+                                        <i class="bi bi-truck me-1"></i>
+                                        Доставлен в ТК
+                                    </button>
+                                </form>
+                            {% elif item.status == 3 %}
+                                <form method="post" action="{% url 'order-set-arrived' pk=order.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success mt-1">
+                                        <i class="bi bi-bookmark-check"></i> Прибыл
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <p class="text-uppercase text-sm mt-4">Прогресс</p>
+
+                    <div>
+                        <span class="me-2 text-xs font-weight-bold">{{order.status|add:1|multiply:20}}%</span>
+                        <div class="progress">
+                          <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="{{order.status}}" aria-valuemin="0" aria-valuemax="5" style="width: {{order.status|add:1|multiply:20}}%;"></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3">
+        <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
             <!-- Order picture card-->
             <div class="card mb-4 mb-xl-0">
                 <div class="card-header">Изображение заказа</div>
-                <div class="card-body text-center">
+                <div class="card-body text-center pt-0">
                     <!-- Order picture image-->
                     <img
                         src="/media/{{ order.img }}"

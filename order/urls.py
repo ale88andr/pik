@@ -39,5 +39,5 @@ urlpatterns = [
     path('purchases/<int:pk>/export/xls', purchase.export_purchase_to_excel, name='purchase-xls'),
     
     # dashboard
-    path('dashboard/', dashboard.index, name="dashboard"),
+    path('', dashboard.index, name="dashboard"),
 ]

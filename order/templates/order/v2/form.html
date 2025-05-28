@@ -3,10 +3,10 @@
 {% block content %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="card col-8">
+        <div class="card col-lg-6 col-12">
             <div class="card-body">
                 <fieldset>
-                    <legend class="text-primary">
+                    <legend class="text-dark">
                         <strong>Данные заказа</strong>
                     </legend>
                     <hr class="mt-0 mb-4">
@@ -14,10 +14,10 @@
                     {% if is_new %}
                         <div class="row mb-3">
                             <div class="col-12 mb-3">
-                                <b>Строка инициализации</b>
+                                <b><label>Строка инициализации:</label></b>
                                 <input type="text" name="init" class="form-control" id="init" onchange="fillData(this)">
-                                <small class="text-body-tertiary">
-                                    Строка инициализации, состоящая из данных, разделенными запятыми: {Наименование товара}, {Ссылка}, {Цена}
+                                <small class="text-xs text-body-tertiary">
+                                    Строка инициализации, состоящая из данных наименования и цены
                                 </small>
                             </div>
                         </div>
@@ -28,7 +28,7 @@
                             <div class="col-12 mb-3">
                                 <b>{{ field.label_tag }}</b> {{ field }}
                                 {{ field.errors }}
-                                <small class="text-body-tertiary">
+                                <small class="text-xs text-body-tertiary">
                                     {{ field.help_text }}
                                 </small>
                             </div>
@@ -52,12 +52,13 @@
         let priceInput = document.getElementById("id_order_price");
 
         function fillData(elem) {
-            values = elem.value.split(",");
+            values = elem.value.toLowerCase().split("цена");
 
-            if (values.length == 3) {
-                titleInput.value = values[0];
-                urlInput.value = values[1];
-                priceInput.value = values[2];
+            if (values.length == 2) {
+                let title = values[0].replace(/[., ]*$/, "");
+                titleInput.value = title.charAt(0).toUpperCase() + title.slice(1)
+                let price = values[1].replace(/^[.,:\- ]*/, "");
+                priceInput.value = parseFloat(price);
             }
         }
     </script>

@@ -237,7 +237,7 @@
             <div class="row">
                 <div class="col-8">
                 <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Выкуп</p>
+                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Доход с выкупа</p>
                     <h6 class="font-weight-bolder">
                         <span class="text-success">+{{ total_dif_amount }}</span> <span class="text-secondary">₽</span>
                     </h6>
@@ -281,14 +281,25 @@
         <div class="card-header pb-0 pt-3 bg-transparent">
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="text-capitalize">Заказы</h4>
-                <p>
+                <div class="text-end">
                     <a href="{% url 'create-purchase-order' pk=purchase.pk %}" class="btn btn-success">
-                        <i class="bi bi-person-plus"></i> Добавить заказ в закупку
+                        <i class="bi bi-person-plus"></i> Добавить заказ
                     </a>
-                    <a href="{% url 'purchase-xls' pk=purchase.pk %}" class="btn btn-secondary">
-                        <i class="bi bi-filetype-xls"></i> Экспорт в excel
-                    </a>
-                </p>
+                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                        <button type="button" class="btn btn-secondary"><i class="bi bi-download me-1"></i> Экспорт</button>
+                        <div class="btn-group" role="group">
+                          <button id="btnGroupDrop4" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                          <div class="dropdown-menu" aria-labelledby="btnGroupDrop4" style="">
+                            <a href="{% url 'purchase-xls' pk=purchase.pk %}" class="dropdown-item">
+                                <i class="bi bi-filetype-xls me-2"></i> Данные о закупке
+                            </a>
+                            <a href="{% url 'purchase-cargo-xls' pk=purchase.pk %}" class="dropdown-item">
+                                <i class="bi bi-filetype-xls me-2"></i> Данные для карго
+                            </a>
+                          </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-2 text-sm font-weight-bold">
@@ -298,7 +309,6 @@
                         {{ statuses|index:item.status }}:<span class="ms-2 me-2 badge bg-gradient-info">{{ item.total }}</span>
                     {% endfor %}
                 </div>
-                
             </div>
 
             <div>
@@ -310,7 +320,7 @@
                     <button class="btn btn-info my-2 my-sm-0" type="submit">Поиск</button>
                 </form>
             </div>
-            
+
             <div class="d-flex justify-content-between align-items-center mb-2 text-sm font-weight-bold">
                 Показано: <span class="ms-2 badge bg-gradient-secondary">{{ total_records }}</span>
             </div>
@@ -398,13 +408,13 @@
                                     <td class="text-nowrap align-middle text-center">
                                         <div class="d-flex flex-column justify-content-center">
                                             <p class="text-xl font-weight-bold mb-1">
-                                                {{ item.order_price }} ¥ 
+                                                {{ item.order_price }} ¥
                                             </p>
                                             <p class="text-xs mb-2">
                                                 <span class="badge bg-gradient-secondary">{{ purchase.exchange }}</span>
                                             </p>
                                             <p class="text-xs text-danger font-weight-bold mb-0">
-                                                {{ item.calculate_order_exchange_price }} ₽ 
+                                                {{ item.calculate_order_exchange_price }} ₽
                                             </p>
                                         </div>
                                     </td>
@@ -412,7 +422,7 @@
                                         {% if item.buy_price %}
                                             <div class="d-flex flex-column justify-content-center">
                                                 <p class="text-xl text-warning font-weight-bold mb-1">
-                                                    ¥ {{ item.buy_price }} 
+                                                    ¥ {{ item.buy_price }}
                                                 </p>
                                                 <p class="text-xs mb-2">
                                                     <span class="badge bg-gradient-secondary">{{ item.exchange_rate }}</span>
@@ -486,7 +496,7 @@
                                                         </a>
                                                     </p>
                                                 {% endif %}
-        
+
                                                 {% if item.buy_price and not item.track_num %}
                                                     <p>
                                                         <a href="{% url 'order-set-track' pk=item.pk %}" class="btn btn-sm btn-dark mt-1">

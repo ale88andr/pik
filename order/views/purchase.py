@@ -3,7 +3,7 @@ from django.forms import model_to_dict
 from django.db.models import Sum, Count
 from django.contrib import messages
 
-from app.services import export_data_to_excel
+from app.services import export_data_to_excel, export_to_excel
 from order.forms.order import CreatePurchaseOrderForm
 from order.forms.purchase import PurchaseInitialForm, PurchaseEditForm, PurchaseCloseForm, PurchaseSearchForm
 from order.forms.search import SearchForm
@@ -119,8 +119,8 @@ def create(request):
         form = PurchaseInitialForm()
 
     return render(
-        request, 
-        "purchase/v2/form.html", 
+        request,
+        "purchase/v2/form.html",
         {
             "form": form,
             "page_section": "Закупки",
@@ -149,10 +149,10 @@ def create_purchase_order(request, pk):
         form = CreatePurchaseOrderForm()
 
     return render(
-        request, 
-        "order/v2/form.html", 
+        request,
+        "order/v2/form.html",
         {
-            "form": form, 
+            "form": form,
             "is_new": True,
             "page_section": "Закупки",
             "page_title": "Добавление нового заказа"
@@ -162,7 +162,7 @@ def create_purchase_order(request, pk):
 
 def edit(request, pk):
     obj = get_object_or_404(Purchase, pk=pk)
-    
+
     if request.method == "POST":
         form = PurchaseEditForm(request.POST, instance=obj)
         if form.is_valid():
@@ -174,8 +174,8 @@ def edit(request, pk):
         form = PurchaseEditForm(model_to_dict(obj))
 
     return render(
-        request, 
-        "purchase/v2/form.html", 
+        request,
+        "purchase/v2/form.html",
         {
             "form": form,
             "page_section": "Закупки",
@@ -197,5 +197,21 @@ def export_purchase_to_excel(request, pk):
     purchase_orders = purchase.purchase_orders.order_by("customer_id")
 
     response = export_data_to_excel(purchase.title, purchase_orders)
+
+    return response
+
+
+def export_purchase_tracknum_to_excel(request, pk):
+    # Query the Person model to get all records
+    purchase = get_object_or_404(Purchase, pk=pk)
+    purchase_orders = purchase.purchase_orders.order_by("customer_id")
+    header = ["Наименование", "Трек номер"]
+    data = [order.export_data_for_cargo for order in purchase_orders]
+
+    response = export_to_excel(
+        f"{purchase.title} - трек номера",
+        data,
+        header
+    )
 
     return response

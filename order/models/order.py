@@ -1,6 +1,5 @@
 from decimal import Decimal
 from typing import Literal
-from django.conf import settings
 from django.db.models import Q
 from django.db import models
 from django.utils import timezone
@@ -35,7 +34,6 @@ class Order(models.Model):
         IN_DELIVERY = 2, "Доставляется в ТК"
         DELIVERED = 3, "Доставлен в ТК"
         ARRIVED = 4, "Прибыл в пункт"
-        CANCELLED = 5, "Отменен"
 
     objects = OrderManager()
 
@@ -85,6 +83,13 @@ class Order(models.Model):
             self.customer.name
         ]
 
+    @property
+    def export_data_for_cargo(self):
+        return [
+            self.title,
+            self.track_num,
+        ]
+
     def calculate_weight(self):
         return self.weight if self.weight else 0
 
@@ -113,7 +118,7 @@ class Order(models.Model):
         Возвращаемое значение:
             int: цена товара * комиссия клиента
         """
-        if not self.order_price or self.buy_price <= 0:
+        if not self.order_price or self.buy_price < 0:
             return 0
         return (self.order_price * self.customer.tax / 100)
 

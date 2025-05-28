@@ -104,17 +104,17 @@
                                     <td class="text-nowrap align-middle text-center">
                                         <div class="d-flex flex-column justify-content-center">
                                             <p class="text-xl font-weight-bold mb-1">
-                                                {{ item.order_price }} ¥ 
+                                                {{ item.order_price }} ¥
                                             </p>
                                             <p class="text-xs mb-2">
                                                 <span class="badge bg-gradient-secondary">{{ purchase.exchange }}</span>
                                             </p>
                                             <p class="text-xs text-danger font-weight-bold mb-0">
-                                                {{ item.calculate_order_exchange_price }} ₽ 
+                                                {{ item.calculate_order_exchange_price }} ₽
                                             </p>
                                         </div>
                                     </td>
-                                    <td class="text-xs">
+                                    <td class="text-xs align-middle text-center">
                                         {% if item.track_num %}
                                             <span class="badge bg-gradient-info"><a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a></span>
                                         {% else %}
@@ -122,7 +122,7 @@
                                         {%endif%}
                                     </td>
                                     <td class="text-xs align-middle text-center">
-                                        <div class="d-flex align-items-center">
+                                        <div class="d-flex flex-column align-items-center">
                                             <div>
                                                 <a class="link-secondary" href="{% url 'order_edit' pk=item.pk %}" class="me-1">
                                                     <i class="bi bi-pencil-square me-1"></i>Изменить

@@ -69,3 +69,36 @@ def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None):
     wb.save(response)
 
     return response
+
+
+def export_to_excel(fname, data, header, footer=None):
+    CTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    response = HttpResponse(content_type=CTYPE)
+    response["Content-Disposition"] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
+
+    # Создание excel
+    wb = openpyxl.Workbook()
+    sheet = wb.active
+
+    # Установка стилей
+    bold_font = Font(size=12, bold=True)
+
+    # Добавление данных
+    if header:
+        sheet.append(header)
+        for cell in sheet[1]:
+            cell.font = bold_font
+
+    for row in data:
+        sheet.append(row)
+
+    if footer:
+        sheet.append(footer)
+
+    sheet.column_dimensions["A"].width = 50
+    sheet.column_dimensions["B"].width = 30
+    sheet.column_dimensions["C"].width = 20
+
+    wb.save(response)
+
+    return response

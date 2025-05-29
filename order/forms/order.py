@@ -1,3 +1,5 @@
+from django import forms
+
 from order.forms.base import BaseForm
 from order.models.order import Order
 
@@ -46,9 +48,9 @@ class CreateOrderForm(OrderForm):
     class Meta:
         model = Order
         fields = (
+            "img",
             "title",
             "url",
-            "img",
             "order_price",
             "customer",
             "purchase"
@@ -60,9 +62,9 @@ class CreatePurchaseOrderForm(OrderForm):
     class Meta:
         model = Order
         fields = (
+            "img",
             "title",
             "url",
-            "img",
             "order_price",
             "customer"
         )
@@ -73,8 +75,8 @@ class CreatePurchaseCustomerOrderForm(OrderForm):
     class Meta:
         model = Order
         fields = (
+            "img",
             "title",
             "url",
-            "img",
             "order_price",
         )

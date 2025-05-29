@@ -4,24 +4,18 @@ from django.forms import model_to_dict
 from django.db.models import Count, Sum
 from django.contrib import messages
 
-from reportlab.pdfbase import pdfmetrics
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm, cm
-from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
-from reportlab.lib import colors
-
 from app.services import export_data_to_excel
 from order.forms.customer import CustomerForm
 from order.forms.order import CreatePurchaseCustomerOrderForm
 from order.forms.search import SearchForm
 from order.models.customer import Customer
-from order.models.marketplace import Marketplace
 from order.models.order import Order
 from order.models.purchase import Purchase
 from app.settings import STATIC_ROOT
+
+
+PAGE_SECTION = "Клиенты"
+PAGE_SECTION_URL = "customers"
 
 
 def index(request):
@@ -45,7 +39,8 @@ def index(request):
             "search_query": query, 
             "customers": customers, 
             "total": customers.count(),
-            "page_section": "Клиенты",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Список клиентов"
         }
     )
@@ -76,7 +71,8 @@ def detail(request, pk):
         {
             "customer": customer, 
             "orders": purchases,
-            "page_section": "Клиенты",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": customer
         }
     )
@@ -97,7 +93,8 @@ def create(request):
         "customer/v2/form.html", 
         {
             "form": form,
-            "page_section": "Клиенты",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового клиента"
         }
     )
@@ -129,7 +126,8 @@ def create_order(request, pk, purchase_pk):
         {
             "form": form, 
             "is_new": True,
-            "page_section": "Клиенты",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового клиента"
         }
     )
@@ -153,7 +151,8 @@ def edit(request, pk):
         "customer/v2/form.html", 
         {
             "form": form,
-            "page_section": "Клиенты",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Изменение данных клиента"
         }
     )
@@ -181,78 +180,10 @@ def purchase(request, pk, purchase_pk):
             "total": purchase_orders.count(),
             "summary": summary,
             "statuses": Order.Status.labels,
-            "page_section": "Клиенты",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": f"{customer}: {purchase}"
         })
-
-
-def purchase_pdf(request, pk, purchase_pk):
-    pdfmetrics.registerFont(TTFont("DejaVuSans", "DejaVuSans.ttf", "utf-8"))
-    default_style = ParagraphStyle("Body", fontName="DejaVuSans", fontSize=12)
-    title_style = ParagraphStyle("Body", fontName="DejaVuSans", fontSize=20, alignment=TA_CENTER)
-
-    customer = get_object_or_404(Customer, pk=pk)
-    purchase = get_object_or_404(Purchase, pk=purchase_pk)
-    purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
-
-    response = HttpResponse(content_type="application/pdf")
-    response['Content-Disposition'] = f"filename='{customer.name}.pdf'"
-
-    doc = SimpleDocTemplate(
-        response,
-        pagesize=A4,
-        rightMargin=40,
-        leftMargin=40,
-        topMargin=20,
-        bottomMargin=40,
-        title="Заказы"
-    )
-
-    content = []
-
-    logo = STATIC_ROOT + "assets/images/logo.png"
-    img = Image(logo, 25*mm, 25*mm)
-    content.append(img)
-    content.append(Spacer(1, 10))
-    content.append(Paragraph("Покупки в Китае", title_style))
-    content.append(Spacer(1, 10))
-
-    content.append(Paragraph(f"Клиент: { customer.name }", default_style))
-    content.append(Spacer(1, 5))
-    content.append(Paragraph(f"Закупка: { purchase.title }", default_style))
-    content.append(Spacer(1, 5))
-    content.append(Paragraph(f"Заказы: { purchase_orders.count() }", default_style))
-    content.append(Spacer(1, 5))
-
-    content.append(Paragraph("Заказы", title_style))
-    content.append(Spacer(1, 20))
-
-    table_data = [["Наименование", "Статус", "Цена ¥", "Цена ₽", "Вес (кг.)", "Трек номер"]]
-
-    for order in purchase_orders:
-        table_data.append([
-            order.title,
-            order.get_status,
-            order.order_price,
-            order.calculate_order_exchange_price(),
-            order.weight,
-            order.track_num
-        ])
-
-    t = Table(
-        table_data,
-        # colWidths=[5 * cm, 4 * cm, 2 * cm, 2 * cm, 2 * cm, 3 * cm],
-        style=[
-            ("FONTNAME", (0,0), (-1,-1), "DejaVuSans"),
-            ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
-        ])
-
-    content.append(t)
-
-    doc.build(content)
-
-    return response
 
 
 def export_purchase_to_excel(request, pk, purchase_pk):

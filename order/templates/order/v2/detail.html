@@ -9,7 +9,7 @@
             <div class="card z-index-2 h-100">
                 <div class="card-header pb-0 pt-3 bg-transparent">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="text-capitalize">Данные заказа</h1>
+                        <h5 class="text-uppercase">Данные заказа</h1>
                         <p>
                             <a href="{% url 'order_edit' pk=order.pk %}" class="btn btn-primary ms-auto">
                                 <i class="bi bi-pencil-square"></i> Изменить заказ
@@ -142,7 +142,7 @@
                         {% endif %}
                     </div>
 
-                    <p class="text-uppercase text-sm mt-4">Прогресс</p>
+                    <p class="text-uppercase text-sm">Прогресс</p>
 
                     <div>
                         <span class="me-2 text-xs font-weight-bold">{{order.status|add:1|multiply:20}}%</span>

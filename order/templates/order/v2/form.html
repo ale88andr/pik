@@ -13,15 +13,30 @@
 
                     {% if is_new %}
                         <div class="row mb-3">
-                            <div class="col-12 mb-3">
+                            <div class="col-12">
                                 <b><label>Строка инициализации:</label></b>
                                 <input type="text" name="init" class="form-control" id="init" onchange="fillData(this)">
                                 <small class="text-xs text-body-tertiary">
-                                    Строка инициализации, состоящая из данных наименования и цены
+                                    Строка инициализации, состоящая из наименования, ссылки и цены
                                 </small>
                             </div>
                         </div>
                     {% endif %}
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <b><label>Изображение товара:</label></b>
+                            <div id="dropZone" class="rounded border-dashed border-secndary text-center p-5" style="border-style: dashed important!">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
+                                    <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"></path>
+                                </svg>
+                                <p class="text-secondary">
+                                    Перетащите сюда изображение или нажмите на область
+                                </p>
+                            </div>
+                            <div id="errorMessage" class="alert alert-danger d-none mt-2"></div>
+                        </div>
+                    </div>
 
                     <div class="row mb-3">
                         {% for field in form %}
@@ -47,19 +62,106 @@
     </form>
 
     <script>
+        const urlRegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/g;
+        const floatRegExp = /(?<!\d)(?<!\d\.)\d{1,2}(?:\.\d{1,2})?(?!\.?\d)/;
+
         let titleInput = document.getElementById("id_title");
         let urlInput = document.getElementById("id_url");
         let priceInput = document.getElementById("id_order_price");
 
-        function fillData(elem) {
-            values = elem.value.toLowerCase().split("цена");
+        function removeFromText(text, regexp) {
+            return text.replace(regexp, '');
+        }
 
-            if (values.length == 2) {
-                let title = values[0].replace(/[., ]*$/, "");
-                titleInput.value = title.charAt(0).toUpperCase() + title.slice(1)
-                let price = values[1].replace(/^[.,:\- ]*/, "");
+        function fillData(elem) {
+            let text = elem.value
+
+            const link = text.match(urlRegExp);
+            if (link) {
+                urlInput.value = link;
+            }
+
+            text = removeFromText(text, urlRegExp);
+
+            const price = text.match(floatRegExp)
+            if (price) {
                 priceInput.value = parseFloat(price);
             }
+
+            text = removeFromText(text, floatRegExp)
+
+            titleInput.value = text.charAt(0).toUpperCase() + text.slice(1)
+        }
+
+        const dropZone = document.getElementById('dropZone')
+        const formFile = document.getElementById('id_img')
+        const errorMessage = document.getElementById('errorMessage')
+
+        const allowedTypes = ['image/jpeg', 'image/png']
+        const maxSize = 2 * 1024 * 1024 // 2MB
+
+        function validateFile(file) {
+            if (!allowedTypes.includes(file.type)) {
+                throw new Error('Неверный формат файла. Пожалуйста загрузите JPEG или PNG файл.')
+            }
+            if (file.size > maxSize) {
+                throw new Error('Файл слишком большой. Максимальный размер 2MB.')
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message
+            errorMessage.classList.remove('d-none')
+        }
+
+        function hideError() {
+            errorMessage.classList.add('d-none')
+        }
+
+        dropZone.addEventListener('click', () => formFile.click())
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault()
+            dropZone.classList.add('bg-light')
+        })
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('bg-light')
+        })
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault()
+            dropZone.classList.remove('bg-light')
+            hideError()
+
+            try {
+                const file = e.dataTransfer.files[0]
+                validateFile(file)
+                formFile.files = e.dataTransfer.files
+                updateDropZoneText()
+            } catch (error) {
+                showError(error.message)
+            }
+        })
+
+        formFile.addEventListener('change', () => {
+            hideError()
+            try {
+                if (formFile.files.length > 0) {
+                validateFile(formFile.files[0])
+                updateDropZoneText()
+            }
+            } catch (error) {
+                showError(error.message)
+                formFile.value = ''
+            }
+        })
+
+        function updateDropZoneText() {
+        dropZone.textContent =
+            formFile.files.length > 0
+            ? formFile.files[0].name
+            : 'Перетащите сюда изображение или нажмите на область'
         }
     </script>
 {% endblock %}

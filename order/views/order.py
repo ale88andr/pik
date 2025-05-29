@@ -7,6 +7,10 @@ from order.forms.search import SearchForm
 from order.models.order import Order
 
 
+PAGE_SECTION = "Заказы"
+PAGE_SECTION_URL = "orders"
+
+
 def list(request):
     form = SearchForm()
     query = request.GET.get("query")
@@ -28,7 +32,8 @@ def list(request):
             "search_query": query,
             "records": orders,
             "total": orders.count(),
-            "page_section": "Заказы",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Список заказов"
         }
     )
@@ -41,7 +46,8 @@ def detail(request, pk):
     "order/v2/detail.html", 
     {
         "order": order,
-        "page_section": "Заказы",
+        "page_section": PAGE_SECTION,
+        "page_section_url": PAGE_SECTION_URL,
         "page_title": order
     }
 )
@@ -69,7 +75,8 @@ def create(request):
         {
             "form": form, 
             "is_new": True,
-            "page_section": "Заказы",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового заказа"
         }
     )
@@ -93,7 +100,8 @@ def edit(request, pk):
         "order/v2/form.html", 
         {
             "form": form,
-            "page_section": "Заказы",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": f"Редактирование данных заказа: {obj}"
         }
     )

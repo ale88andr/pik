@@ -12,6 +12,10 @@ from order.models.order import Order
 from order.models.purchase import Purchase
 
 
+PAGE_SECTION = "Закупки"
+PAGE_SECTION_URL = "purchases"
+
+
 def list(request):
     form = SearchForm()
     query = request.GET.get("query")
@@ -33,7 +37,8 @@ def list(request):
             "search_query": query,
             "records": orders,
             "total": orders.count(),
-            "page_section": "Закупки",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Список закупок"
         }
     )
@@ -100,7 +105,8 @@ def detail(request, pk):
             "total_dif_amount": total_dif_amount,
             "total_profit": total_profit,
             "form": search_form,
-            "page_section": "Закупки",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": purchase.title,
             "summary": summary,
             "statuses": Order.Status.labels
@@ -123,7 +129,8 @@ def create(request):
         "purchase/v2/form.html",
         {
             "form": form,
-            "page_section": "Закупки",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Создание новой закупки"
         }
     )
@@ -154,7 +161,8 @@ def create_purchase_order(request, pk):
         {
             "form": form,
             "is_new": True,
-            "page_section": "Закупки",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового заказа"
         }
     )
@@ -178,7 +186,8 @@ def edit(request, pk):
         "purchase/v2/form.html",
         {
             "form": form,
-            "page_section": "Закупки",
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
             "page_title": "Редактирование данных закупки"
         }
     )

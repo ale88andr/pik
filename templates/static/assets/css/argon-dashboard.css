@@ -23900,6 +23900,7 @@ hr.horizontal.gray-light {
   overflow-y: auto;
   padding: 0;
   box-shadow: none;
+  z-index: 998;
 }
 
 .navbar-vertical.navbar-expand-xs .navbar-collapse {
@@ -28269,6 +28270,10 @@ pre[class*=language-] {
   color: var(--bs-danger);
   list-style-type: circle;
   margin-top: 0.5em
+}
+
+.border-dashed {
+  border: 2px dashed #dee2e6 !important;
 }
 
 /*# sourceMappingURL=dashboard-free.css.map */

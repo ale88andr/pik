@@ -87,7 +87,6 @@ def detail(request, pk):
         number_of_orders=Count("pk", distinct=True),
         orders_weight=Sum("weight"),
     )
-    summary = orders.values("status").annotate(total=Count("id"))
 
     total = orders_info.get("total_amount", 0) or 0
 
@@ -97,6 +96,18 @@ def detail(request, pk):
     total_profit = total_tax_amount + total_dif_amount - purchase.other_expenses
 
     records = search_orders if search_orders or is_form_filled else orders
+    
+    # Charts
+    
+    statuses = orders.values("status").annotate(total=Count("id"))
+    
+    status_chart_labels = [Order.Status.labels[obj["status"]] for obj in statuses]
+    status_chart_values = [obj["total"] for obj in statuses]
+    
+    customers = orders.values("customer__name").annotate(orders=Count("id"))
+    
+    customer_chart_labels = [obj["customer__name"] for obj in customers]
+    customer_chart_values = [obj["orders"] for obj in customers]
 
     return render(
         request,
@@ -114,8 +125,10 @@ def detail(request, pk):
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": purchase.title,
-            "summary": summary,
-            "statuses": Order.Status.labels
+            "status_chart_values": status_chart_values,
+            "status_chart_labels": status_chart_labels,
+            "customer_chart_labels": customer_chart_labels,
+            "customer_chart_values": customer_chart_values
         }
     )
 

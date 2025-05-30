@@ -25,7 +25,7 @@ def index(request):
         "dashboard/index.html",
         {
             "orders": orders,
-            "purchases": purchases.filter(closed_date=None),
+            "purchases": purchases.filter(closed_date=None).order_by("-created_at"),
             "purchases_list": purchases_list,
             "purchases_num_of_orders_list": purchases_num_of_orders_list,
             "purchases_num_of_customers_list": purchases_num_of_customers_list,

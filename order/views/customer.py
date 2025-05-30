@@ -165,6 +165,7 @@ def delete(request, pk):
 
 
 def purchase(request, pk, purchase_pk):
+    sort = request.GET.get("sort", "created_at")
     customer = get_object_or_404(Customer, pk=pk)
     purchase = get_object_or_404(Purchase, pk=purchase_pk)
     purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
@@ -175,7 +176,7 @@ def purchase(request, pk, purchase_pk):
         "customer/v2/purchase.html",
         {
             "customer": customer,
-            "orders": purchase_orders,
+            "orders": purchase_orders.order_by(sort),
             "purchase": purchase,
             "total": purchase_orders.count(),
             "summary": summary,

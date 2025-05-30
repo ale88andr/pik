@@ -19,15 +19,20 @@ PAGE_SECTION_URL = "purchases"
 def list(request):
     form = SearchForm()
     query = request.GET.get("query")
-    sort = request.GET.get("sort", "created_at")
+    sort = request.GET.get("sort", "-created_at")
 
     if query:
         form = SearchForm(request.GET)
         if form.is_valid():
             search_query = form.cleaned_data["query"]
-            orders = Purchase.objects.search(query=search_query).order_by(sort)
+            orders = Purchase.objects.search(query=search_query)
     else:
-        orders = Purchase.objects.prefetch_related("purchase_orders").order_by(sort)
+        orders = Purchase.objects.prefetch_related("purchase_orders").annotate(
+            num_of_customers=Count("purchase_orders__customer_id", distinct=True),
+            cost_of_order_price=Sum("purchase_orders__order_price"),
+            sum_of_weight=Sum("purchase_orders__weight"),
+            num_of_orders=Count("purchase_orders")
+        )
 
     return render(
         request,
@@ -35,7 +40,7 @@ def list(request):
         {
             "form": form,
             "search_query": query,
-            "records": orders,
+            "records": orders.order_by(sort),
             "total": orders.count(),
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,
@@ -48,6 +53,7 @@ def detail(request, pk):
     search_form = PurchaseSearchForm()
     is_form_filled = request.GET.get("query") or request.GET.get("customer") or request.GET.get("marketplace") or request.GET.get("status")
     search_orders = None
+    sort = request.GET.get("sort", "created_at")
 
     if is_form_filled:
         search_form = PurchaseSearchForm(request.GET)
@@ -97,7 +103,7 @@ def detail(request, pk):
         "purchase/v2/detail.html",
         {
             "purchase": purchase,
-            "records": records,
+            "records": records.order_by(sort),
             "total_records": records.count(),
             "records_info": orders_info,
             "total_amount_rub": total_amount_rub,

@@ -14,3 +14,19 @@ def multiply(value, arg):
         return int(value) * int(arg)
     except (ValueError, TypeError):
         return ""
+    
+
+@register.filter
+def multiply_float(value, arg):
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return ""
+    
+
+@register.filter
+def divide(value, arg):
+    try:
+        return int(value) / int(arg)
+    except (ValueError, TypeError):
+        return ""

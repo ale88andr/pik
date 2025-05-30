@@ -4,28 +4,19 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-9 col-xl-9 col-12">
+        <div class="col-lg-6 col-xl-6 col-12">
             <!-- Order details card-->
-            <div class="card z-index-2 h-100">
-                <div class="card-header pb-0 pt-3 bg-transparent">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="text-uppercase">Данные заказа</h1>
-                        <p>
-                            <a href="{% url 'order_edit' pk=order.pk %}" class="btn btn-primary ms-auto">
-                                <i class="bi bi-pencil-square"></i> Изменить заказ
-                            </a>
-                        </p>
+            <div class="card h-100 mb-4">
+                <div class="card-header pb-0 pt-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-0">Данные заказа</h6>
+                        <span class="badge text-xs bg-gradient-warning">{{ order.get_status }}</span>
                     </div>
                 </div>
 
                 <div class="card-body pt-0">
-
-                    <h3 class="text-dark">
-                        {{ order.title }}
-                        <span class="badge text-xs bg-gradient-warning">{{ order.get_status }}</span>
-                    </h3>
                     
-                    <p class="text-uppercase text-sm mt-4">Сведения при оформлении заказа</p>
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-3">Сведения при оформлении заказа</h6>
 
                     <div class="mt-4">
                         <h6>
@@ -51,64 +42,10 @@
                         </div>
                     </div>
 
-                    <p class="text-uppercase text-sm mt-4">Сведения о выкупе заказа</p>
-
-                    <div class="d-flex justify-content-center">
-                        <div class="d-grid text-center">
-                            <p>
-                                <span class="badge bg-gradient-secondary">{{ order.purchase.exchange }}</span>
-                            </p>
-                            <span class="text-sm opacity-8">Курс закупки</span>
-                        </div>
-
-                        <div class="d-grid text-center mx-3">
-                            <p>
-                                <span class="text-xl text-secondary font-weight-bolder">{{ order.order_price }} ¥</span> | 
-                                <span class="text-xl text-warning font-weight-bolder">{{ order.calculate_order_exchange_price }} ₽</span>
-                            </p>
-                            <span class="text-sm opacity-8">Цена при оформлении</span>
-                        </div>
-
-                        <div class="d-grid text-center mx-3">
-                            <p>
-                                <span class="badge bg-gradient-secondary">{{ order.exchange_rate }}</span>
-                            </p>
-                            <span class="text-sm opacity-8">Курс выкупа</span>
-                        </div>
-
-                        <div class="d-grid text-center mx-3">
-                            <p>
-                                <span class="text-xl text-secondary font-weight-bolder">{{ order.buy_price }} ¥</span> | 
-                                <span class="text-xl text-warning font-weight-bolder">{{ order.calculate_buy_exchange_price }} ₽</span>
-                            </p>
-                            <span class="text-sm opacity-8">Цена при выкупе</span>
-                        </div>
-                        <div class="d-grid text-center mx-3">
-                            <p>
-                                <span class="text-xl text-secondary font-weight-bolder">{{ order.tax }} ¥</span> | 
-                                <span class="text-xl text-success font-weight-bolder">{% if order.tax %}{{ order.calculate_difference_tax }}{% else %}0{% endif %} ₽</span>
-                            </p>
-                            <span class="text-sm opacity-8">Комиссия</span>
-                        </div>
-                        <div class="d-grid text-center mx-3">
-                            <p>
-                                <span class="text-xl text-secondary font-weight-bolder">{% if order.difference %}{{ order.difference }}{% else %}0{% endif %} ¥</span> | 
-                                <span class="text-xl text-success font-weight-bolder">{% if order.difference %}{{ order.calculate_difference }}{% else %}0{% endif %} ₽</span>
-                            </p>
-                            <span class="text-sm opacity-8">Доход при выкупе</span>
-                        </div>
-                        <div class="d-grid text-center">
-                            <p>
-                                <span class="badge bg-gradient-primary">{{ order.track_num|default:"Не присвоен" }}</span>
-                            </p>
-                            <span class="text-sm opacity-8">Трек #</span>
-                        </div>
-                    </div>
-
-                    <p class="text-uppercase text-sm mt-4">Доступные действия</p>
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-3">Доступные действия</h6>
 
                     <div class="d-flex">
-                        {% if not item.buy_price %}
+                        {% if not order.buy_price %}
                             <p>
                                 <a href="{% url 'order-buy' pk=order.pk %}" class="btn btn-primary mt-1">
                                     <i class="bi bi-bag me-1"></i> Выкупить товар
@@ -116,14 +53,14 @@
                             </p>
                         {% endif %}
 
-                        {% if item.buy_price and not item.track_num %}
+                        {% if order.buy_price and not order.track_num %}
                             <p>
                                 <a href="{% url 'order-set-track' pk=order.pk %}" class="btn btn-dark mt-1">
                                     <i class="bi bi-truck me-1"></i> Добавить трэк
                                 </a>
                             </p>
                         {% else %}
-                            {% if item.status == 2 %}
+                            {% if order.status == 2 %}
                                 <form method="post" action="{% url 'order-set-delivered' pk=order.pk %}">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-secondary mt-1">
@@ -131,7 +68,7 @@
                                         Доставлен в ТК
                                     </button>
                                 </form>
-                            {% elif item.status == 3 %}
+                            {% elif order.status == 3 %}
                                 <form method="post" action="{% url 'order-set-arrived' pk=order.pk %}">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-success mt-1">
@@ -140,9 +77,32 @@
                                 </form>
                             {% endif %}
                         {% endif %}
+                        <div>
+                            <a class="btn btn-outline-primary mt-1 ms-2" href="{% url 'order_edit' pk=order.pk %}">
+                                <i class="bi bi-pencil-square me-1"></i>Изменить заказ
+                            </a>
+                            <a class="btn btn-outline-danger mt-1 ms-1" data-bs-toggle="offcanvas" href="#{{ order.id }}" role="button" aria-controls="delete">
+                                <i class="bi bi-trash me-1"></i>Удалить заказ
+                            </a>
+                            <div class="offcanvas offcanvas-start" tabindex="-1" id="{{ order.id }}" aria-labelledby="{{ order.id }}Label">
+                                <div class="offcanvas-header">
+                                    <h5 class="offcanvas-title" id="{{ order.id }}Label">{{ order.title }}</h5>
+                                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body text-start">
+                                    <div>
+                                        Это действие безвозвратно <br>удалит объект из базы данных!
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="{% url 'order_delete' pk=order.pk %}" class="btn btn-danger me-1">Подтвердить</a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
                     </div>
 
-                    <p class="text-uppercase text-sm">Прогресс</p>
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Прогресс</h6>
 
                     <div>
                         <span class="me-2 text-xs font-weight-bold">{{order.status|add:1|multiply:20}}%</span>
@@ -156,9 +116,145 @@
         </div>
 
         <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
+            <div class="card h-100 mb-4">
+                <div class="card-header pb-0 px-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-0">Сведения</h6>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-end align-items-center">
+                            <span class="text-xs me-1">Доход:</span> <small class="text-success text-gradient">+ {{ order.get_total_profit }} ₽</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-4 p-3">
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Оформление заказа</h6>
+                    <ul class="list-group">
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-warning mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-down"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Цена при оформлении</h6>
+                                <span class="text-xs">{{ order.created_at }}</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-warning text-gradient text-sm font-weight-bold">
+                                {{ order.order_price }} ¥
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-dark mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-up"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Курс закупки</h6>
+                                <span class="text-xs">{{ order.created_at }}</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-dark text-gradient text-sm font-weight-bold">
+                                {{ order.purchase.exchange }}
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-danger mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-exclamation"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Цена при оформлении</h6>
+                                <span class="text-xs">{{ order.created_at }}</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold">
+                                {{ order.calculate_order_exchange_price }} ₽
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-exclamation"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Комиссия</h6>
+                                <span class="text-xs">{{ order.tax }} ¥</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">
+                                {% if order.tax %}+ {{ order.calculate_difference_tax }}{% else %}0{% endif %} ₽
+                            </div>
+                        </li>
+                    </ul>
+
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-3">Выкуп заказа</h6>
+                    <ul class="list-group">
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-warning mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-down"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Цена при выкупе</h6>
+                                <span class="text-xs">{{ order.created_at }}</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-warning text-gradient text-sm font-weight-bold">
+                                {{ order.buy_price }} ¥
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-dark mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-up"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Курс выкупа</h6>
+                                <span class="text-xs">{{ order.created_at }}</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-dark text-gradient text-sm font-weight-bold">
+                                {{ order.exchange_rate }}
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-danger mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-exclamation"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Цена выкупа</h6>
+                                <span class="text-xs">{{ order.created_at }}</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold">
+                                {{ order.calculate_buy_exchange_price }} ₽
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-exclamation"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Доход при выкупе</h6>
+                                <span class="text-xs">{% if order.difference %}{{ order.difference }}{% else %}0{% endif %} ¥</span>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">
+                                {% if order.difference %}+ {{ order.calculate_difference }}{% else %}0{% endif %} ₽
+                            </div>
+                        </li>
+                    </ul>
+
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-3">Сведения о доставке</h6>
+                    <ul class="list-group">
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-primary mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-down"></i></button>
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark text-sm">Трек №</h6>
+                            </div>
+                            </div>
+                            <div class="d-flex align-items-center text-primary text-gradient text-sm font-weight-bold">
+                                {{ order.track_num|default:"Ожидается" }}
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
             <!-- Order picture card-->
             <div class="card mb-4 mb-xl-0">
-                <div class="card-header">Изображение заказа</div>
+                <div class="card-header"><h6 class="mb-0">Изображение заказа</h6></div>
                 <div class="card-body text-center pt-0">
                     <!-- Order picture image-->
                     <img

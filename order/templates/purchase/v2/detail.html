@@ -195,7 +195,7 @@
                 <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Вес</p>
                     <h6 class="font-weight-bolder">
-                        {{ records_info.orders_weight }} <span class="text-secondary">Кг</span>
+                        {{ records_info.orders_weight|divide:1000|floatformat:2 }} <span class="text-secondary">Кг</span>
                     </h6>
                 </div>
                 </div>
@@ -334,23 +334,23 @@
                 <div class="table-responsive p-0">
                     <table class="table align-items-center mb-0">
                         <thead>
-                            <tr class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            <tr class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
                                 <th scope="col">#</th>
                                 <th scope="col">Скрин</th>
                                 <th scope="col">
                                     Наименование
-                                    <a href="?sort=title{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
-                                    <a href="?sort=-title{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                                    <a href="?sort=title{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1"><i class="bi bi-sort-alpha-down"></i></a>
+                                    <a href="?sort=-title{% if search_query %}&query={{ search_query }}{% endif %}"><i class="bi bi-sort-alpha-up"></i></a>
                                 </th>
                                 <th scope="col">
                                     Заказ
-                                    <a href="?sort=order_price{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
-                                    <a href="?sort=-order_price{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                                    <a href="?sort=order_price{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1"><i class="bi bi-sort-alpha-down"></i></a>
+                                    <a href="?sort=-order_price{% if search_query %}&query={{ search_query }}{% endif %}"><i class="bi bi-sort-alpha-up"></i></a>
                                 </th>
                                 <th scope="col">
                                     Выкуп
-                                    <a href="?sort=buy_price{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
-                                    <a href="?sort=-buy_price{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                                    <a href="?sort=buy_price{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1"><i class="bi bi-sort-alpha-down"></i></a>
+                                    <a href="?sort=-buy_price{% if search_query %}&query={{ search_query }}{% endif %}"><i class="bi bi-sort-alpha-up"></i></a>
                                 </th>
                                 <th scope="col">Доход ₽</th>
                                 <th scope="col">Клиент / Трек #</th>
@@ -453,7 +453,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex align-items-center">
+                                        <div class="d-flex flex-column align-items-center">
                                             <div>
                                                 <a class="link-secondary" href="{% url 'customer' pk=item.customer.pk %}">
                                                     {{ item.customer }}
@@ -470,8 +470,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-nowrap align-middle text-center">
-                                        <div class="d-flex align-items-center">
+                                    <td class="text-xs align-middle text-center">
+                                        <div class="d-flex flex-column align-items-center">
                                             <div>
                                                 <a href="{% url 'order_edit' pk=item.pk %}" class="link-secondary font-weight-bold text-xs me-1">
                                                     <i class="bi bi-pencil-square me-1"></i>Изменить

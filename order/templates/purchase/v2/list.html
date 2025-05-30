@@ -1,5 +1,7 @@
 {% extends 'dashboard.html' %}
 
+{% load extras %}
+
 {% block content %}
 
     <div class="row">
@@ -13,12 +15,6 @@
                             <i class="bi bi-person-plus"></i> Добавить закупку
                         </a>
                     </p>
-                </div>
-                <div>
-                    <form method="get" class="d-flex mb-3">
-                        <input class="form-control me-sm-2" name="query" value="{% if search_query %}{{search_query}}{% endif %}" type="search" placeholder="Поиск">
-                        <button class="btn btn-primary my-2 my-sm-0" type="submit">Поиск</button>
-                    </form>
                 </div>
                 <div class="d-flex justify-content-between align-items-center text-sm">
                     Всего: <span class="ms-2 badge bg-dark">{{ total }}</span>
@@ -91,19 +87,19 @@
                                         <span class="badge badge-sm bg-gradient-dark">{{ item.exchange }}</span>
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-success">{{ item.purchase_orders.count }}</span>
+                                        <span class="badge badge-sm bg-gradient-success">{{ item.num_of_orders }}</span>
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-warning">0</span>
+                                        <span class="badge badge-sm bg-gradient-warning">{{ item.num_of_customers }}</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <p class="text-danger mb-0">
-                                            0
+                                        <p class="font-weight-bolder text-xs text-primary mb-0">
+                                            {{ item.cost_of_order_price|multiply_float:item.exchange|floatformat:2 }} <span class="text-secondary">₽</span>
                                         </p>
                                     </td>
-                                    <td>
-                                        {% if item.weight %}
-                                            {{ item.weight }}
+                                    <td class="align-middle text-center text-xs text-secondary">
+                                        {% if item.sum_of_weight %}
+                                            {{ item.sum_of_weight|divide:1000|floatformat:2 }}
                                         {% else %}
                                             <span class="text-body-tertiary">0</span>
                                         {% endif %}

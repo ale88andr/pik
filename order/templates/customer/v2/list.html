@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <div class="row">
+<div class="row">
     <div class="col-lg-12 mb-lg-0 mb-4">
         <div class="card h-100">
             <div class="card-header pb-0 pt-3 bg-transparent">
@@ -61,6 +61,7 @@
                                     </th>
                                     <td>
                                         <div class="d-flex px-2 py-1">
+                                            <button class="btn btn-icon-only btn-rounded btn-outline-warning mb-0 me-3 btn-sm d-flex align-items-center justify-content-center">{{ customer.name|first }}</button>
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">
                                                     <a class="link-primary" href="{% url 'customer' pk=customer.pk %}">
@@ -70,7 +71,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="align-middle text-sm text-center">
+                                    <td class="align-middle text-xs text-center font-weight-bold">
                                         {% if customer.phone %}
                                             {{ customer.phone }}
                                         {% else %}
@@ -85,7 +86,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="align-middle text-sm text-center">
-                                        <span class="badge rounded-pill bg-gradient-danger">{{ customer.tax }} %</span>
+                                        <span class="badge rounded-pill bg-gradient-warning">{{ customer.tax }} %</span>
                                     </td>
                                     <td class="align-middle text-xs text-center">
                                         <a href="{% url 'customer_edit' pk=customer.pk %}" class="link-secondary me-1">
@@ -150,5 +151,6 @@
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}

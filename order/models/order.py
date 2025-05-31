@@ -50,6 +50,7 @@ class Order(models.Model):
     marketplace = models.ForeignKey(Marketplace, on_delete=models.PROTECT, verbose_name="Маркетплейс", null=True, blank=True)
     status = models.IntegerField(choices=Status.choices, default=Status.DRAFT, verbose_name="Статус")
 
+    buyed_at = models.DateField("Дата выкупа", null=True, blank=True)
     created_at = models.DateField("Созданно", default=timezone.now)
 
     @cached_property

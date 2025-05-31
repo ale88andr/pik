@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import model_to_dict
 from django.contrib import messages
@@ -42,8 +44,8 @@ def list(request):
 def detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
     return render(
-    request, 
-    "order/v2/detail.html", 
+    request,
+    "order/v2/detail.html",
     {
         "order": order,
         "page_section": PAGE_SECTION,
@@ -70,10 +72,10 @@ def create(request):
         form = CreateOrderForm()
 
     return render(
-        request, 
-        "order/v2/form.html", 
+        request,
+        "order/v2/form.html",
         {
-            "form": form, 
+            "form": form,
             "is_new": True,
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,
@@ -84,7 +86,7 @@ def create(request):
 
 def edit(request, pk):
     obj = get_object_or_404(Order, id=pk)
-    
+
     if request.method == "POST":
         form = OrderForm(request.POST, files=request.FILES, instance=obj)
         if form.is_valid():
@@ -96,8 +98,8 @@ def edit(request, pk):
         form = OrderForm(model_to_dict(obj))
 
     return render(
-        request, 
-        "order/v2/form.html", 
+        request,
+        "order/v2/form.html",
         {
             "form": form,
             "page_section": PAGE_SECTION,
@@ -114,6 +116,7 @@ def buy(request, pk):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.status = Order.Status.BUYED
+            instance.buyed_at = datetime.date.now()
             instance.save()
 
             messages.success(request, "Данные заказа обновлены!")

@@ -3,9 +3,9 @@
 {% block content %}
 
     <div class="row">
-        <div class="col-lg-8 col-xl-8 col-12">
+        <div class="col-lg-9 col-xl-9 col-12">
             {% for purchase in orders %}
-            <div class="card h-100">
+            <div class="card">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Участие в закупках</h6>
                 </div>
@@ -38,13 +38,13 @@
                                     <td><span class="badge bg-gradient-dark">{{ purchase.purchase__exchange }}</span></td>
                                     <td>
                                         <p class="mb-0">
-                                            <span class="text-xl text-secondary font-weight-bolder">{{ purchase.sum|floatformat:2 }} ¥</span> | 
+                                            <span class="text-xl text-secondary font-weight-bolder">{{ purchase.sum|floatformat:2 }} ¥</span> |
                                             <span class="text-xl text-warning font-weight-bolder">{{ purchase.sum_in_rub }} ₽</span>
                                         </p>
                                     </td>
                                     <td class="d-none d-md-block">
                                         <p class="mb-0">
-                                            <span class="text-xl text-secondary font-weight-bolder">{{ purchase.tax|floatformat:2 }} ¥</span> | 
+                                            <span class="text-xl text-secondary font-weight-bolder">{{ purchase.tax|floatformat:2 }} ¥</span> |
                                             <span class="text-xl text-success font-weight-bolder">{{ purchase.tax_in_rub }} ₽</span>
                                         </p>
                                     </td>
@@ -52,36 +52,15 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                 </div>
             </div>
             {% endfor %}
 
         </div>
 
-        <div class="col-lg-4 col-xl-4 col-12 mt-lg-0 mt-xl-0 mt-2">
-            <div class="card z-index-2 h-100">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Клиент</h6>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title text-primary">{{ customer.name }}</h5>
-                    <p class="card-text">{{ customer.phone|default:'Не указан' }}</p>
-                    <p class="card-text">
-                        {% if customer.telegram_id %}
-                            <a href="https://t.me/{{ customer.telegram_id }}" target="_blank">{{ customer.telegram_id }}</a>
-                        {% else %}
-                            <span class="text-body-tertiary">Не указан</span>
-                        {% endif %}
-                    </p>
-                    <p class="text-xs font-weight-bold">
-                        Комиссия: <span class="badge bg-warning">{{ customer.tax }}%</span>
-                    </p>
-                    <a href="{% url 'customer_edit' pk=customer.pk %}" class="btn btn-primary me-1">
-                        <i class="bi bi-pencil-square"></i> Редактировать
-                    </a>
-                </div>
-            </div>
+        <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
+            {% include 'common/customer-profile.html' %}
         </div>
     </div>
 

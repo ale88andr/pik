@@ -222,19 +222,16 @@
     </div>
 
     <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
-        <div class="card">
+        {% include 'common/customer-profile.html' %}
+
+        <div class="card mt-4">
             <div class="card-header py-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-capitalize">Клиент</h1>
-                    <p>
-                        <a href="{% url 'customer_edit' pk=customer.pk %}" class="btn btn-primary mt-2">
-                            <i class="bi bi-pencil-square"></i> Редактировать
-                        </a>
-                    </p>
+                    <h5>Сведения о закупке</h1>
                 </div>
             </div>
             <div class="card-body">
-                <h4 class="font-weight-bold text-primary">{{ customer.name }}</h4>
+                <!-- <h4 class="font-weight-bold text-primary">{{ customer.name }}</h4>
                 <h6 class="card-title text-secondary">
                     {% if customer.phone %}
                         {{ customer.phone }}
@@ -251,7 +248,7 @@
                 </p>
                 <p class="card-text">
                     Комиссия: <span class="badge bg-warning">{{ customer.tax }}%</span>
-                </p>
+                </p> -->
 
                 <h6 class="m-0 font-weight-bold text-primary">{{ purchase.title }}</h6>
 

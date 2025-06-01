@@ -44,15 +44,15 @@ def list(request):
 def detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
     return render(
-    request,
-    "order/v2/detail.html",
-    {
-        "order": order,
-        "page_section": PAGE_SECTION,
-        "page_section_url": PAGE_SECTION_URL,
-        "page_title": order
-    }
-)
+        request,
+        "order/v2/detail.html",
+        {
+            "order": order,
+            "page_section": PAGE_SECTION,
+            "page_section_url": PAGE_SECTION_URL,
+            "page_title": order
+        }
+    )
 
 
 def create(request):

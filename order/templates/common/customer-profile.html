@@ -1,53 +1,52 @@
 <div class="card card-profile">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Клиент</h6>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-4 col-lg-4 order-lg-2">
-            <div class="mt-3 mt-lg-4 mb-4 mb-lg-0 text-center d-flex align-items-center justify-content-center">
-                <button class="btn btn-lg btn-icon-only btn-rounded btn-outline-primary mb-0 d-flex align-items-center justify-content-center">{{ customer.name|first }}</button>
+        <div class="d-flex justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Клиент</h6>
+            <div class="d-flex justify-content-end align-items-center">
+                <span class="text-xs me-1">
+                    <a href="{% url 'customer_edit' pk=customer.pk %}" class="btn btn-sm btn-dark float-right mb-0 d-none d-lg-block">
+                        <i class="bi bi-pencil-square me-1"></i> Редактировать
+                    </a>
+                </small>
             </div>
-        </div>
-    </div>
-
-    <div class="card-header text-center border-0 pt-0 pt-lg-2 pb-4 pb-lg-3">
-        <div class="d-flex justify-content-center">
-            <a href="{% url 'customer_edit' pk=customer.pk %}" class="btn btn-sm btn-dark float-right mb-0 d-none d-lg-block">
-                <i class="bi bi-pencil-square"></i> Редактировать
-            </a>
         </div>
     </div>
 
     <div class="card-body pt-0">
-        <div class="row">
-            <div class="col">
-                <div class="d-flex justify-content-center">
-                    <div class="d-grid text-center">
-                        <span class="text-lg font-weight-bolder"><span class="badge bg-warning">{{ customer.tax }}%</span></span>
-                        <span class="text-sm opacity-8">Комиссия</span>
+        <div class="text-center mt-1">
+            <div class="row justify-content-center">
+                <div class="col-4 col-lg-4 order-lg-2">
+                    <div class="mt-3 mt-lg-4 mb-4 mb-lg-0 text-center d-flex align-items-center justify-content-center">
+                        <button class="btn btn-lg btn-icon-only btn-rounded btn-outline-primary mb-0 d-flex align-items-center justify-content-center">{{ customer.name|first }}</button>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="text-center mt-4">
             <h5>
                 {{ customer.name }}
             </h5>
+            <div class="row">
+                <div class="col mt-1">
+                    <div class="d-flex justify-content-center">
+                        <div class="d-grid text-center">
+                            <span class="text-lg font-weight-bolder"><span class="badge bg-warning">{{ customer.tax }}%</span></span>
+                            <span class="text-sm opacity-8">Комиссия</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div>
                 {{ customer.phone|default:'Не указан' }}
             </div>
-            <div class="mt-1">
-                <a href="{%if customer.telegram_id%}https://t.me/customer.telegram_id{%else%}javascript:;{%endif%}" target="_blank" class="btn btn-sm btn-primary mb-0 d-none d-lg-block">
+            <div class="mt-3">
+                <a href="{%if customer.telegram_id%}https://t.me/customer.telegram_id{%else%}javascript:;{%endif%}" target="_blank" class="btn btn-sm btn-outline-primary mb-0 d-none d-lg-block">
                     Telegram:
                     {% if customer.telegram_id %}
-                        {{ customer.telegram_id }}
+                        @{{ customer.telegram_id }}
                     {% else %}
                         <span class="text-body-tertiary">Не указан</span>
                     {% endif %}
                 </a>
             </div>
-
         </div>
     </div>
 </div>

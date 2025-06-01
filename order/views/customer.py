@@ -35,9 +35,9 @@ def index(request):
         request,
         "customer/v2/list.html",
         {
-            "form": form, 
-            "search_query": query, 
-            "customers": customers, 
+            "form": form,
+            "search_query": query,
+            "customers": customers,
             "total": customers.count(),
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,
@@ -66,10 +66,10 @@ def detail(request, pk):
         purchase["tax_in_rub"] = round(purchase.get("tax") * purchase.get("purchase__exchange"), 2)
 
     return render(
-        request, 
-        "customer/v2/detail.html", 
+        request,
+        "customer/v2/detail.html",
         {
-            "customer": customer, 
+            "customer": customer,
             "orders": purchases,
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,
@@ -89,8 +89,8 @@ def create(request):
         form = CustomerForm()
 
     return render(
-        request, 
-        "customer/v2/form.html", 
+        request,
+        "customer/v2/form.html",
         {
             "form": form,
             "page_section": PAGE_SECTION,
@@ -121,10 +121,10 @@ def create_order(request, pk, purchase_pk):
         form = CreatePurchaseCustomerOrderForm()
 
     return render(
-        request, 
-        "order/v2/form.html", 
+        request,
+        "order/v2/form.html",
         {
-            "form": form, 
+            "form": form,
             "is_new": True,
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,
@@ -135,20 +135,20 @@ def create_order(request, pk, purchase_pk):
 
 def edit(request, pk):
     obj = get_object_or_404(Customer, id=pk)
-    
+
     if request.method == "POST":
         form = CustomerForm(request.POST, instance=obj)
         if form.is_valid():
             form.save()
-            
+
             messages.success(request, "Данные клиента обновлены!")
             return redirect("customer", pk=obj.pk)
     else:
         form = CustomerForm(model_to_dict(obj))
 
     return render(
-        request, 
-        "customer/v2/form.html", 
+        request,
+        "customer/v2/form.html",
         {
             "form": form,
             "page_section": PAGE_SECTION,
@@ -169,7 +169,16 @@ def purchase(request, pk, purchase_pk):
     customer = get_object_or_404(Customer, pk=pk)
     purchase = get_object_or_404(Purchase, pk=purchase_pk)
     purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
-    summary = purchase_orders.values("status").annotate(total=Count("id"))
+
+    # Charts
+
+    statuses = purchase_orders.values("status").annotate(total=Count("id"))
+
+    status_chart_labels = [Order.Status.labels[obj["status"]] for obj in statuses]
+    status_chart_values = [obj["total"] for obj in statuses]
+
+    customer_purchase_price = purchase_orders.aggregate(total=Sum("order_price"))
+    purchase_price = purchase.purchase_orders.aggregate(total=Sum("order_price"))
 
     return render(
         request,
@@ -179,8 +188,12 @@ def purchase(request, pk, purchase_pk):
             "orders": purchase_orders.order_by(sort),
             "purchase": purchase,
             "total": purchase_orders.count(),
-            "summary": summary,
+            "summary": statuses,
             "statuses": Order.Status.labels,
+            "status_chart_labels": status_chart_labels,
+            "status_chart_values": status_chart_values,
+            "customer_purchase_price": round(float(customer_purchase_price["total"]), 2),
+            "purchase_price": round(float(purchase_price["total"]), 2) - round(float(customer_purchase_price["total"]), 2),
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": f"{customer}: {purchase}"

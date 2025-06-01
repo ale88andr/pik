@@ -96,16 +96,16 @@ def detail(request, pk):
     total_profit = total_tax_amount + total_dif_amount - purchase.other_expenses
 
     records = search_orders if search_orders or is_form_filled else orders
-    
+
     # Charts
-    
+
     statuses = orders.values("status").annotate(total=Count("id"))
-    
+
     status_chart_labels = [Order.Status.labels[obj["status"]] for obj in statuses]
     status_chart_values = [obj["total"] for obj in statuses]
-    
+
     customers = orders.values("customer__name").annotate(orders=Count("id"))
-    
+
     customer_chart_labels = [obj["customer__name"] for obj in customers]
     customer_chart_values = [obj["orders"] for obj in customers]
 

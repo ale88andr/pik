@@ -5,7 +5,43 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-lg-12 col-sm-12">
+    <div class="col-lg-3 mb-sm-4">
+        <div class="card">
+            <div class="card-header mt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="text-capitalize">Поиск</h1>
+                    <p>
+                        <a href="{% url 'orders' %}" class="link-secondary text-xs">Сбросить</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <p class="mb-2 text-sm font-weight-bold">
+                        Показано: 
+                    </p>
+                    <p><span class="ms-2 badge bg-gradient-success">{{ total }}</span></p>
+                </div>
+                <form method="get">
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-xs-12 col-sm-12 col-auto mt-2">
+                                <span class="text-uppercase text-secondary text-center text-xxs font-weight-bolder opacity-7">
+                                    {{ field.label }}
+                                </span> {{ field }}
+                            </div>
+                        {% endfor %}
+                        <div class="mt-4 mb-2">
+                            <button class="btn btn-dark my-sm-0" type="submit">Поиск</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9 col-12">
         <div class="card h-100">
             <div class="card-header pt-3">
                 <div class="d-flex justify-content-between align-items-center">
@@ -17,6 +53,7 @@
                     </p>
                 </div>
             </div>
+
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-1">
                     <table class="table align-items-center mb-0">
@@ -67,12 +104,12 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="col-md-2">
+                                    <td>
                                         <div class="d-flex px-2 py-1">
                                             <div class="d-flex flex-column justify-content-center">
                                                 <p class="text-xl font-weight-bold mb-1">
-                                                    <a href="{% url 'order' pk=item.pk %}">
-                                                        {{ item.title }}
+                                                    <a class="link-primary" href="{% url 'order' pk=item.pk %}">
+                                                        {{ item.title|truncatechars:20 }}
                                                     </a>
                                                 </p>
                                                 <p class="text-xs mb-2">
@@ -127,12 +164,12 @@
                                         {%endif%}
                                     </td>
                                     <td class="text-xs align-middle text-center">
-                                        <a href="{% url 'purchase' pk=item.purchase.pk %}">
+                                        <a class="link-secondary" href="{% url 'purchase' pk=item.purchase.pk %}">
                                             <strong>{{ item.purchase }}</strong>
                                         </a>
                                     </td>
                                     <td class="text-xs align-middle text-center">
-                                        <a href="{% url 'customer' pk=item.customer.pk %}">
+                                        <a class="link-secondary" href="{% url 'customer' pk=item.customer.pk %}">
                                             <strong>{{ item.customer }}</strong>
                                         </a>
                                     </td>
@@ -193,7 +230,7 @@
                                     </td>
                                 </tr>
                             {% empty %}
-                                {% include "common/tables/empty.html" with colspan=6 %}
+                                {% include "common/tables/empty.html" with colspan=9 %}
                             {% endfor %}
                         </tbody>
                     </table>

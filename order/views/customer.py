@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import model_to_dict
 from django.db.models import Count, Sum
@@ -11,7 +10,6 @@ from order.forms.search import SearchForm
 from order.models.customer import Customer
 from order.models.order import Order
 from order.models.purchase import Purchase
-from app.settings import STATIC_ROOT
 
 
 PAGE_SECTION = "Клиенты"

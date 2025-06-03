@@ -4,8 +4,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import model_to_dict
 from django.contrib import messages
 
-from order.forms.order import BuyOrderForm, CreateOrderForm, OrderForm, SetTrackNumOrderForm
-from order.forms.search import SearchForm
+from app.utils import is_search_form_filled
+from order.forms.order import BuyOrderForm, CreateOrderForm, OrderForm, OrderSearchForm, SetTrackNumOrderForm
 from order.models.order import Order
 
 
@@ -14,25 +14,42 @@ PAGE_SECTION_URL = "orders"
 
 
 def list(request):
-    form = SearchForm()
-    query = request.GET.get("query")
+    form = OrderSearchForm(request.GET)
+    search_form = is_search_form_filled(request, form.fields)
     sort = request.GET.get("sort", "created_at")
 
-    if query:
-        form = SearchForm(request.GET)
-        if form.is_valid():
-            search_query = form.cleaned_data["query"]
-            orders = Order.objects.search(query=search_query).order_by(sort)
+    if search_form and form.is_valid():
+        orders = Order.objects
+
+        search = form.cleaned_data["query"]
+        customer_id = form.cleaned_data["customer"]
+        marketplace_id = form.cleaned_data["marketplace"]
+        purchase_id = form.cleaned_data["purchase"]
+        status = int(form.cleaned_data["status"]) if form.cleaned_data["status"] else None
+
+        if search:
+            orders = orders.search(query=search)
+
+        if customer_id:
+            orders = orders.filter(customer=customer_id)
+
+        if marketplace_id:
+            orders = orders.filter(marketplace=marketplace_id)
+
+        if status is not None:
+            orders = orders.filter(status=status)
+
+        if purchase_id:
+            orders = orders.filter(purchase=purchase_id)
     else:
-        orders = Order.objects.all().order_by(sort)
+        orders = Order.objects.all()
 
     return render(
         request,
         "order/v2/list.html",
         {
             "form": form,
-            "search_query": query,
-            "records": orders,
+            "records": orders.order_by(sort),
             "total": orders.count(),
             "page_section": PAGE_SECTION,
             "page_section_url": PAGE_SECTION_URL,

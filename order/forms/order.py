@@ -1,7 +1,10 @@
 from django import forms
 
 from order.forms.base import BaseForm
+from order.models.customer import Customer
+from order.models.marketplace import Marketplace
 from order.models.order import Order
+from order.models.purchase import Purchase
 
 class OrderForm(BaseForm):
 
@@ -80,3 +83,47 @@ class CreatePurchaseCustomerOrderForm(OrderForm):
             "url",
             "order_price",
         )
+
+
+class OrderSearchForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        default_select_class = "form-select me-sm-2"
+        default_input_class = "form-control me-sm-2"
+
+        self.fields["customer"].widget.attrs['class'] = default_select_class
+        self.fields["marketplace"].widget.attrs['class'] = default_select_class
+        self.fields["status"].widget.attrs['class'] = default_select_class
+        self.fields["query"].widget.attrs['class'] = default_input_class
+        self.fields["purchase"].widget.attrs['class'] = default_select_class
+    
+    query = forms.CharField(
+        label="Поиск",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Искать"})
+    )
+    customer = forms.ModelChoiceField(
+        label="Клиент",
+        queryset=Customer.objects.all(),
+        empty_label="--- Клиент ---",
+        required=False
+    )
+    status = forms.ChoiceField(
+        label="Статус",
+        choices=[("", "--- Статус ---")] + [
+            (status.value, status.label) for status in Order.Status
+        ],
+        required=False
+    )
+    marketplace = forms.ModelChoiceField(
+        label="Площадка",
+        queryset=Marketplace.objects.all(),
+        empty_label="--- Маркетплейс ---",
+        required=False
+    )
+    purchase = forms.ModelChoiceField(
+        label="Закупка",
+        queryset=Purchase.objects.all(),
+        empty_label="--- Закупка ---",
+        required=False
+    )

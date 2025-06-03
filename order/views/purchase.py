@@ -4,10 +4,10 @@ from django.db.models import Sum, Count
 from django.contrib import messages
 
 from app.services import export_data_to_excel, export_to_excel
+from app.utils import is_search_form_filled
 from order.forms.order import CreatePurchaseOrderForm
 from order.forms.purchase import PurchaseInitialForm, PurchaseEditForm, PurchaseCloseForm, PurchaseSearchForm
 from order.forms.search import SearchForm
-from order.models.marketplace import Marketplace
 from order.models.order import Order
 from order.models.purchase import Purchase
 
@@ -50,34 +50,32 @@ def list(request):
 
 
 def detail(request, pk):
-    search_form = PurchaseSearchForm()
-    is_form_filled = request.GET.get("query") or request.GET.get("customer") or request.GET.get("marketplace") or request.GET.get("status")
+    search_form = PurchaseSearchForm(request.GET)
+    is_form_filled = is_search_form_filled(request, search_form.fields)
     search_orders = None
     sort = request.GET.get("sort", "created_at")
 
-    if is_form_filled:
-        search_form = PurchaseSearchForm(request.GET)
-        if search_form.is_valid():
-            search_orders = Order.objects
+    if is_form_filled and search_form.is_valid():
+        search_orders = Order.objects
 
-            search = search_form.cleaned_data["query"]
-            customer_id = search_form.cleaned_data["customer"]
-            marketplace_id = search_form.cleaned_data["marketplace"]
-            status = int(search_form.cleaned_data["status"]) if search_form.cleaned_data["status"] else None
+        search = search_form.cleaned_data["query"]
+        customer_id = search_form.cleaned_data["customer"]
+        marketplace_id = search_form.cleaned_data["marketplace"]
+        status = int(search_form.cleaned_data["status"]) if search_form.cleaned_data["status"] else None
 
-            if search:
-                search_orders = search_orders.search(query=search)
+        if search:
+            search_orders = search_orders.search(query=search)
 
-            if customer_id:
-                search_orders = search_orders.filter(customer=customer_id)
+        if customer_id:
+            search_orders = search_orders.filter(customer=customer_id)
 
-            if marketplace_id:
-                search_orders = search_orders.filter(marketplace=marketplace_id)
+        if marketplace_id:
+            search_orders = search_orders.filter(marketplace=marketplace_id)
 
-            if status is not None:
-                search_orders = search_orders.filter(status=status)
+        if status is not None:
+            search_orders = search_orders.filter(status=status)
 
-            search_orders = search_orders.filter(purchase=pk)
+        search_orders = search_orders.filter(purchase=pk)
 
     purchase = get_object_or_404(Purchase, pk=pk)
     orders = purchase.purchase_orders.all()

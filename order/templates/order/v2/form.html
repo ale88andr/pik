@@ -65,7 +65,7 @@
 
     <script>
         const urlRegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/g;
-        const floatRegExp = /(?<!\d)(?<!\d\.)\d{1,2}(?:\.\d{1,2})?(?!\.?\d)/;
+        const floatRegExp = /(?<!\d)(?<!\d\.)\d{1,2}(?:\.\d{1,2})?(?!\.?\d)/g;
 
         let titleInput = document.getElementById("id_title");
         let urlInput = document.getElementById("id_url");
@@ -87,7 +87,7 @@
 
             const price = text.match(floatRegExp)
             if (price) {
-                priceInput.value = parseFloat(price);
+                priceInput.value = parseFloat(price[price.length - 1]);
             }
 
             text = removeFromText(text, floatRegExp)

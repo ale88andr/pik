@@ -5,11 +5,11 @@ from django.forms import model_to_dict
 from django.contrib import messages
 
 from app.utils import is_search_form_filled
+from order.constants import DEFAULT_FORM_ERROR, ORDER_TRACK_MSG, ORDER_UPDATE_MSG, ORDERS
 from order.forms.order import BuyOrderForm, CreateOrderForm, OrderForm, OrderSearchForm, SetTrackNumOrderForm
 from order.models.order import Order
 
 
-PAGE_SECTION = "Заказы"
 PAGE_SECTION_URL = "orders"
 
 
@@ -43,7 +43,7 @@ def list(request):
             "form": form,
             "records": orders.order_by(sort),
             "total": orders.count(),
-            "page_section": PAGE_SECTION,
+            "page_section": ORDERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Список заказов"
         }
@@ -57,7 +57,7 @@ def detail(request, pk):
         "order/detail.html",
         {
             "order": order,
-            "page_section": PAGE_SECTION,
+            "page_section": ORDERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": order
         }
@@ -77,7 +77,7 @@ def create(request):
 
             return redirect("orders")
         else:
-            messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
+            messages.error(request, DEFAULT_FORM_ERROR)
     else:
         form = CreateOrderForm()
 
@@ -87,7 +87,7 @@ def create(request):
         {
             "form": form,
             "is_new": True,
-            "page_section": PAGE_SECTION,
+            "page_section": ORDERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового заказа"
         }
@@ -102,8 +102,10 @@ def edit(request, pk):
         if form.is_valid():
             form.save()
 
-            messages.success(request, "Данные заказа обновлены!")
+            messages.success(request, ORDER_UPDATE_MSG)
             return redirect("order", pk=obj.pk)
+        else:
+            messages.error(request, DEFAULT_FORM_ERROR)
     else:
         form = OrderForm(model_to_dict(obj))
 
@@ -112,7 +114,7 @@ def edit(request, pk):
         "order/form.html",
         {
             "form": form,
-            "page_section": PAGE_SECTION,
+            "page_section": ORDERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": f"Редактирование данных заказа: {obj}"
         }
@@ -129,8 +131,10 @@ def buy(request, pk):
             instance.buyed_at = datetime.date.now()
             instance.save()
 
-            messages.success(request, "Данные заказа обновлены!")
+            messages.success(request, ORDER_UPDATE_MSG)
             return redirect("order", pk=order.pk)
+        else:
+            messages.error(request, DEFAULT_FORM_ERROR)
     else:
         form = BuyOrderForm(model_to_dict(order))
 
@@ -146,8 +150,10 @@ def set_track_num(request, pk):
             instance.status = Order.Status.IN_DELIVERY
             instance.save()
 
-            messages.success(request, "Трек номер отслеживания доставки добавлен!")
+            messages.success(request, ORDER_TRACK_MSG)
             return redirect(request.headers.get("Referer"), "/")
+        else:
+            messages.error(request, DEFAULT_FORM_ERROR)
     else:
         form = SetTrackNumOrderForm(model_to_dict(order))
 

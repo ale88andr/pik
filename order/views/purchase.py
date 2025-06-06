@@ -5,6 +5,7 @@ from django.contrib import messages
 
 from app.services import export_data_to_excel, export_to_excel
 from app.utils import is_search_form_filled
+from order.constants import PURCHASES
 from order.forms.order import CreatePurchaseOrderForm
 from order.forms.purchase import PurchaseInitialForm, PurchaseEditForm, PurchaseCloseForm, PurchaseSearchForm
 from order.forms.search import SearchForm
@@ -12,7 +13,6 @@ from order.models.order import Order
 from order.models.purchase import Purchase
 
 
-PAGE_SECTION = "Закупки"
 PAGE_SECTION_URL = "purchases"
 
 
@@ -36,13 +36,13 @@ def list(request):
 
     return render(
         request,
-        "purchase/v2/list.html",
+        "purchase/list.html",
         {
             "form": form,
             "search_query": query,
             "records": orders.order_by(sort),
             "total": orders.count(),
-            "page_section": PAGE_SECTION,
+            "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Список закупок"
         }
@@ -109,7 +109,7 @@ def detail(request, pk):
 
     return render(
         request,
-        "purchase/v2/detail.html",
+        "purchase/detail.html",
         {
             "purchase": purchase,
             "records": records.order_by(sort),
@@ -120,7 +120,7 @@ def detail(request, pk):
             "total_dif_amount": total_dif_amount,
             "total_profit": total_profit,
             "form": search_form,
-            "page_section": PAGE_SECTION,
+            "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": purchase.title,
             "status_chart_values": status_chart_values,
@@ -143,10 +143,10 @@ def create(request):
 
     return render(
         request,
-        "purchase/v2/form.html",
+        "purchase/form.html",
         {
             "form": form,
-            "page_section": PAGE_SECTION,
+            "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Создание новой закупки"
         }
@@ -178,7 +178,7 @@ def create_purchase_order(request, pk):
         {
             "form": form,
             "is_new": True,
-            "page_section": PAGE_SECTION,
+            "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового заказа"
         }
@@ -200,10 +200,10 @@ def edit(request, pk):
 
     return render(
         request,
-        "purchase/v2/form.html",
+        "purchase/form.html",
         {
             "form": form,
-            "page_section": PAGE_SECTION,
+            "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Редактирование данных закупки"
         }

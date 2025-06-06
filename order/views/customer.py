@@ -4,6 +4,7 @@ from django.db.models import Count, Sum
 from django.contrib import messages
 
 from app.services import export_data_to_excel
+from order.constants import CUSTOMERS
 from order.forms.customer import CustomerForm
 from order.forms.order import CreatePurchaseCustomerOrderForm
 from order.forms.search import SearchForm
@@ -12,7 +13,6 @@ from order.models.order import Order
 from order.models.purchase import Purchase
 
 
-PAGE_SECTION = "Клиенты"
 PAGE_SECTION_URL = "customers"
 
 
@@ -31,13 +31,13 @@ def index(request):
 
     return render(
         request,
-        "customer/v2/list.html",
+        "customer/list.html",
         {
             "form": form,
             "search_query": query,
             "customers": customers,
             "total": customers.count(),
-            "page_section": PAGE_SECTION,
+            "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Список клиентов"
         }
@@ -65,11 +65,11 @@ def detail(request, pk):
 
     return render(
         request,
-        "customer/v2/detail.html",
+        "customer/detail.html",
         {
             "customer": customer,
             "orders": purchases,
-            "page_section": PAGE_SECTION,
+            "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": customer
         }
@@ -88,10 +88,10 @@ def create(request):
 
     return render(
         request,
-        "customer/v2/form.html",
+        "customer/form.html",
         {
             "form": form,
-            "page_section": PAGE_SECTION,
+            "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового клиента"
         }
@@ -124,7 +124,7 @@ def create_order(request, pk, purchase_pk):
         {
             "form": form,
             "is_new": True,
-            "page_section": PAGE_SECTION,
+            "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Добавление нового клиента"
         }
@@ -146,10 +146,10 @@ def edit(request, pk):
 
     return render(
         request,
-        "customer/v2/form.html",
+        "customer/form.html",
         {
             "form": form,
-            "page_section": PAGE_SECTION,
+            "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": "Изменение данных клиента"
         }
@@ -180,7 +180,7 @@ def purchase(request, pk, purchase_pk):
 
     return render(
         request,
-        "customer/v2/purchase.html",
+        "customer/purchase.html",
         {
             "customer": customer,
             "orders": purchase_orders.order_by(sort),
@@ -192,7 +192,7 @@ def purchase(request, pk, purchase_pk):
             "status_chart_values": status_chart_values,
             "customer_purchase_price": round(float(customer_purchase_price["total"]), 2),
             "purchase_price": round(float(purchase_price["total"]), 2) - round(float(customer_purchase_price["total"]), 2),
-            "page_section": PAGE_SECTION,
+            "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": f"{customer}: {purchase}"
         })

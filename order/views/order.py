@@ -15,38 +15,30 @@ PAGE_SECTION_URL = "orders"
 
 def list(request):
     form = OrderSearchForm(request.GET)
-    search_form = is_search_form_filled(request, form.fields)
     sort = request.GET.get("sort", "created_at")
+    orders = Order.objects
 
-    if search_form and form.is_valid():
-        orders = Order.objects
-
+    if is_search_form_filled(request, form.fields) and form.is_valid():
         search = form.cleaned_data["query"]
-        customer_id = form.cleaned_data["customer"]
-        marketplace_id = form.cleaned_data["marketplace"]
-        purchase_id = form.cleaned_data["purchase"]
-        status = int(form.cleaned_data["status"]) if form.cleaned_data["status"] else None
-
+        
         if search:
             orders = orders.search(query=search)
 
-        if customer_id:
-            orders = orders.filter(customer=customer_id)
-
-        if marketplace_id:
-            orders = orders.filter(marketplace=marketplace_id)
-
-        if status is not None:
-            orders = orders.filter(status=status)
-
-        if purchase_id:
-            orders = orders.filter(purchase=purchase_id)
+        filters = {
+            "customer": form.cleaned_data["customer"],
+            "marketplace": form.cleaned_data["marketplace"],
+            "purchase": form.cleaned_data["purchase"],
+            "status": int(form.cleaned_data["status"]) if form.cleaned_data["status"] else None
+        }
+        
+        filters = {key: value for key, value in filters.items() if value is not None}
+        orders = orders.filter(**filters)
     else:
-        orders = Order.objects.all()
+        orders.all()
 
     return render(
         request,
-        "order/v2/list.html",
+        "order/list.html",
         {
             "form": form,
             "records": orders.order_by(sort),
@@ -62,7 +54,7 @@ def detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
     return render(
         request,
-        "order/v2/detail.html",
+        "order/detail.html",
         {
             "order": order,
             "page_section": PAGE_SECTION,
@@ -73,6 +65,7 @@ def detail(request, pk):
 
 
 def create(request):
+    form = CreateOrderForm(request.POST, files=request.FILES) if request.method == "POST" else CreateOrderForm()
     if request.method == "POST":
         form = CreateOrderForm(request.POST, files=request.FILES)
         if form.is_valid():
@@ -90,7 +83,7 @@ def create(request):
 
     return render(
         request,
-        "order/v2/form.html",
+        "order/form.html",
         {
             "form": form,
             "is_new": True,
@@ -116,7 +109,7 @@ def edit(request, pk):
 
     return render(
         request,
-        "order/v2/form.html",
+        "order/form.html",
         {
             "form": form,
             "page_section": PAGE_SECTION,
@@ -141,7 +134,7 @@ def buy(request, pk):
     else:
         form = BuyOrderForm(model_to_dict(order))
 
-    return render(request, "order/v2/form.html", {"form": form})
+    return render(request, "order/form.html", {"form": form})
 
 
 def set_track_num(request, pk):
@@ -158,7 +151,7 @@ def set_track_num(request, pk):
     else:
         form = SetTrackNumOrderForm(model_to_dict(order))
 
-    return render(request, "order/v2/form.html", {"form": form})
+    return render(request, "order/form.html", {"form": form})
 
 
 def set_delivered(request, pk):

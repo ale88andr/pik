@@ -120,7 +120,7 @@ def create_order(request, pk, purchase_pk):
 
     return render(
         request,
-        "order/v2/form.html",
+        "order/form.html",
         {
             "form": form,
             "is_new": True,

@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-6 col-xl-6 col-12">
+        <div class="col-lg-5 col-xl-5 col-12">
             <!-- Order details card-->
             <div class="card h-100 mb-4">
                 <div class="card-header pb-0 pt-3">
@@ -115,7 +115,7 @@
             </div>
         </div>
 
-        <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
+        <div class="col-lg-4 col-xl-4 col-12 mt-lg-0 mt-xl-0 mt-2">
             <div class="card h-100 mb-4">
                 <div class="card-header pb-0 px-3">
                     <div class="row">
@@ -187,7 +187,7 @@
                             <button class="btn btn-icon-only btn-rounded btn-outline-warning mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-down"></i></button>
                             <div class="d-flex flex-column">
                                 <h6 class="mb-1 text-dark text-sm">Цена при выкупе</h6>
-                                <span class="text-xs">{{ order.created_at }}</span>
+                                <span class="text-xs">{{ order.buyed_at|default:"Неизвестно" }}</span>
                             </div>
                             </div>
                             <div class="d-flex align-items-center text-warning text-gradient text-sm font-weight-bold">
@@ -199,7 +199,7 @@
                             <button class="btn btn-icon-only btn-rounded btn-outline-dark mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-arrow-up"></i></button>
                             <div class="d-flex flex-column">
                                 <h6 class="mb-1 text-dark text-sm">Курс выкупа</h6>
-                                <span class="text-xs">{{ order.created_at }}</span>
+                                <span class="text-xs">{{ order.buyed_at|default:"Неизвестно" }}</span>
                             </div>
                             </div>
                             <div class="d-flex align-items-center text-dark text-gradient text-sm font-weight-bold">
@@ -211,7 +211,7 @@
                             <button class="btn btn-icon-only btn-rounded btn-outline-danger mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="fas fa-exclamation"></i></button>
                             <div class="d-flex flex-column">
                                 <h6 class="mb-1 text-dark text-sm">Цена выкупа</h6>
-                                <span class="text-xs">{{ order.created_at }}</span>
+                                <span class="text-xs">{{ order.buyed_at|default:"Неизвестно" }}</span>
                             </div>
                             </div>
                             <div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold">

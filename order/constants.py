@@ -19,8 +19,14 @@ PURCHASES           = "Закупки"
 
 ORDER               = DEFAULT_OBJECT
 ORDERS              = "Заказы"
+ORDERS_URL          = "orders"
+ORDER_LIST_TITLE    = "Список заказов"
+ORDER_ADD_TITLE     = "Добавление нового заказа"
+ORDER_EDIT_TITLE    = "Редактирование данных заказа: "
 ORDER_TRACK_MSG     = "Трек номер отслеживания доставки добавлен!"
 ORDER_UPDATE_MSG    = "Данные заказа обновлены!"
+ORDER_STATUS_MSG    = ": Статус заказа обновлен!"
+ORDER_CREATE_MSG    = "Заказ оформлен: "
 
 MARKETPLACE         = DEFAULT_OBJECT
 MARKETPLACES        = "Маркетплейсы"

@@ -23,7 +23,7 @@ class OrderManager(models.Manager):
             or_lookup = (Q(title__icontains=query) | Q(order_price__icontains=query) | Q(buy_price__icontains=query) | Q(track_num__icontains=query))
             qs = qs.filter(or_lookup)
 
-        return qs
+        return qs.select_related("customer", "purchase", "marketplace")
 
 
 class Order(models.Model):
@@ -50,7 +50,7 @@ class Order(models.Model):
     marketplace = models.ForeignKey(Marketplace, on_delete=models.PROTECT, verbose_name="Маркетплейс", null=True, blank=True)
     status = models.IntegerField(choices=Status.choices, default=Status.DRAFT, verbose_name="Статус")
 
-    buyed_at = models.DateField("Дата выкупа", null=True, blank=True)
+    buyed_at = models.DateTimeField("Дата выкупа", null=True, blank=True)
     created_at = models.DateField("Созданно", default=timezone.now)
 
     @cached_property

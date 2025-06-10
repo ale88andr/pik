@@ -5,12 +5,20 @@ from django.forms import model_to_dict
 from django.contrib import messages
 
 from app.utils import is_search_form_filled
-from order.constants import DEFAULT_FORM_ERROR, ORDER_TRACK_MSG, ORDER_UPDATE_MSG, ORDERS
+from order.constants import (
+    DEFAULT_FORM_ERROR, 
+    ORDER_ADD_TITLE,
+    ORDER_CREATE_MSG, 
+    ORDER_EDIT_TITLE, 
+    ORDER_LIST_TITLE, 
+    ORDER_STATUS_MSG, 
+    ORDER_TRACK_MSG, 
+    ORDER_UPDATE_MSG, 
+    ORDERS,
+    ORDERS_URL
+)
 from order.forms.order import BuyOrderForm, CreateOrderForm, OrderForm, OrderSearchForm, SetTrackNumOrderForm
 from order.models.order import Order
-
-
-PAGE_SECTION_URL = "orders"
 
 
 def list(request):
@@ -44,8 +52,8 @@ def list(request):
             "records": orders.order_by(sort),
             "total": orders.count(),
             "page_section": ORDERS,
-            "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Список заказов"
+            "page_section_url": ORDERS_URL,
+            "page_title": ORDER_LIST_TITLE
         }
     )
 
@@ -58,7 +66,7 @@ def detail(request, pk):
         {
             "order": order,
             "page_section": ORDERS,
-            "page_section_url": PAGE_SECTION_URL,
+            "page_section_url": ORDERS_URL,
             "page_title": order
         }
     )
@@ -70,12 +78,12 @@ def create(request):
         form = CreateOrderForm(request.POST, files=request.FILES)
         if form.is_valid():
             order = form.save()
-            messages.success(request, f"Заказ '{order.title}' оформлен")
+            messages.success(request, f"{ORDER_CREATE_MSG} {order.title}")
 
             if "add_another" in request.POST:
                 return redirect("create-order")
 
-            return redirect("orders")
+            return redirect(ORDERS_URL)
         else:
             messages.error(request, DEFAULT_FORM_ERROR)
     else:
@@ -88,8 +96,8 @@ def create(request):
             "form": form,
             "is_new": True,
             "page_section": ORDERS,
-            "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Добавление нового заказа"
+            "page_section_url": ORDERS_URL,
+            "page_title": ORDER_ADD_TITLE
         }
     )
 
@@ -115,8 +123,8 @@ def edit(request, pk):
         {
             "form": form,
             "page_section": ORDERS,
-            "page_section_url": PAGE_SECTION_URL,
-            "page_title": f"Редактирование данных заказа: {obj}"
+            "page_section_url": ORDERS_URL,
+            "page_title": f"{ORDER_EDIT_TITLE} {obj}"
         }
     )
 
@@ -128,7 +136,7 @@ def buy(request, pk):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.status = Order.Status.BUYED
-            instance.buyed_at = datetime.date.now()
+            instance.buyed_at = datetime.now()
             instance.save()
 
             messages.success(request, ORDER_UPDATE_MSG)
@@ -151,7 +159,7 @@ def set_track_num(request, pk):
             instance.save()
 
             messages.success(request, ORDER_TRACK_MSG)
-            return redirect(request.headers.get("Referer"), "/")
+            return redirect(request.headers.get("Referer"), ORDERS_URL)
         else:
             messages.error(request, DEFAULT_FORM_ERROR)
     else:
@@ -166,8 +174,8 @@ def set_delivered(request, pk):
         order.status = Order.Status.DELIVERED
         order.save()
 
-        messages.success(request, f"Статус заказа {order} обновлен!")
-        return redirect(request.headers.get("Referer"), "/")
+        messages.success(request, f"{order} {ORDER_STATUS_MSG}")
+        return redirect(request.headers.get("Referer"), ORDERS_URL)
 
 
 def set_arrived(request, pk):
@@ -176,11 +184,11 @@ def set_arrived(request, pk):
         order.status = Order.Status.ARRIVED
         order.save()
 
-        messages.success(request, f"Статус заказа {order} обновлен!")
-        return redirect(request.headers.get("Referer"), "/")
+        messages.success(request, f"{order} {ORDER_STATUS_MSG}")
+        return redirect(request.headers.get("Referer"), ORDERS_URL)
 
 
 def delete(request, pk):
     obj = get_object_or_404(Order, pk=pk)
     obj.delete()
-    return redirect("orders")
+    return redirect(ORDERS_URL)

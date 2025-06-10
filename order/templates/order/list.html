@@ -128,37 +128,41 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="align-middle text-center">
-                                        <div class="d-flex flex-column justify-content-center">
-                                            <p class="text-xl font-weight-bold mb-1">
-                                                {{ item.order_price }} ¥
+                                    <td class="text-nowrap align-middle text-end">
+                                        <div class="d-flex flex-column justify-content-between">
+                                            <p class="text-xl text-warning text-gradient font-weight-bold mb-1">
+                                                {{ item.order_price }}
+                                                <img src="/static/assets/img/china.png" style="width: 24px"/>   
                                             </p>
-                                            <p class="text-xs mb-2">
-                                                <span class="badge bg-gradient-secondary">{{ item.purchase.exchange }}</span>
+                                            <p class="text-xs mb-1">
+                                                <span class="badge bg-gradient-info">{{ item.purchase.exchange }}</span>
                                             </p>
-                                            <p class="text-xs text-danger font-weight-bold mb-0">
-                                                {{ item.calculate_order_exchange_price }} ₽
+                                            <p class="text-xl text-dark text-gradient font-weight-bold mb-0">
+                                                {{ item.calculate_order_exchange_price }}
+                                                <img src="/static/assets/img/russia.png" style="width: 24px"/>
                                             </p>
                                         </div>
                                     </td>
-                                    <td class="align-middle text-center">
+                                    <td class="text-nowrap align-middle text-end">
                                         {% if item.buy_price %}
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <p class="text-xl text-warning font-weight-bold mb-1">
-                                                    ¥ {{ item.buy_price }}
+                                            <div class="d-flex flex-column justify-content-between">
+                                                <p class="text-xl text-danger text-gradient font-weight-bold mb-1">
+                                                    {{ item.buy_price }}
+                                                    <img src="/static/assets/img/china.png" style="width: 24px"/>   
                                                 </p>
-                                                <p class="text-xs mb-2">
-                                                    <span class="badge bg-gradient-secondary">{{ item.exchange_rate }}</span>
+                                                <p class="text-xs mb-1">
+                                                    <span class="badge bg-gradient-success">{{ item.exchange_rate }}</span>
                                                 </p>
-                                                <p class="text-xs text-danger font-weight-bold mb-0">
-                                                    ₽ {{ item.calculate_buy_exchange_price }}
+                                                <p class="text-xl text-primary text-gradient font-weight-bold mb-0">
+                                                    {{ item.calculate_buy_exchange_price }}
+                                                    <img src="/static/assets/img/russia.png" style="width: 24px"/>
                                                 </p>
                                             </div>
                                         {% endif %}
                                     </td>
                                     <td class="text-xs align-middle text-center">
                                         {% if item.track_num %}
-                                            <span class="badge bg-gradient-secondary"><a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a></span>
+                                            <span class="badge bg-gradient-info"><a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a></span>
                                         {% else %}
                                             Нет
                                         {%endif%}

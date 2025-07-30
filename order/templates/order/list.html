@@ -19,7 +19,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <p class="mb-2 text-sm font-weight-bold">
-                        Показано: 
+                        Показано:
                     </p>
                     <p><span class="ms-2 badge bg-gradient-success">{{ total }}</span></p>
                 </div>
@@ -92,7 +92,7 @@
                                         />
                                         <div class="offcanvas offcanvas-start" tabindex="-1" id="img-{{ item.id }}" aria-labelledby="img-{{ item.id }}Label">
                                             <div class="offcanvas-header">
-                                                <h4 class="text-start text-primary" id="img-{{ item.id }}Label">{{ item.title }}</h4>
+                                                <h5 class="offcanvas-title" id="img-{{ item.id }}Label">{{ item.title }}</h5>
                                                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                                             </div>
                                             <div class="offcanvas-body">
@@ -132,7 +132,7 @@
                                         <div class="d-flex flex-column justify-content-between">
                                             <p class="text-xl text-warning text-gradient font-weight-bold mb-1">
                                                 {{ item.order_price }}
-                                                <img src="/static/assets/img/china.png" style="width: 24px"/>   
+                                                <img src="/static/assets/img/china.png" style="width: 24px"/>
                                             </p>
                                             <p class="text-xs mb-1">
                                                 <span class="badge bg-gradient-info">{{ item.purchase.exchange }}</span>
@@ -148,7 +148,7 @@
                                             <div class="d-flex flex-column justify-content-between">
                                                 <p class="text-xl text-danger text-gradient font-weight-bold mb-1">
                                                     {{ item.buy_price }}
-                                                    <img src="/static/assets/img/china.png" style="width: 24px"/>   
+                                                    <img src="/static/assets/img/china.png" style="width: 24px"/>
                                                 </p>
                                                 <p class="text-xs mb-1">
                                                     <span class="badge bg-gradient-success">{{ item.exchange_rate }}</span>

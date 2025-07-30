@@ -6,14 +6,14 @@ from django.contrib import messages
 
 from app.utils import is_search_form_filled
 from order.constants import (
-    DEFAULT_FORM_ERROR, 
+    DEFAULT_FORM_ERROR,
     ORDER_ADD_TITLE,
-    ORDER_CREATE_MSG, 
-    ORDER_EDIT_TITLE, 
-    ORDER_LIST_TITLE, 
-    ORDER_STATUS_MSG, 
-    ORDER_TRACK_MSG, 
-    ORDER_UPDATE_MSG, 
+    ORDER_CREATE_MSG,
+    ORDER_EDIT_TITLE,
+    ORDER_LIST_TITLE,
+    ORDER_STATUS_MSG,
+    ORDER_TRACK_MSG,
+    ORDER_UPDATE_MSG,
     ORDERS,
     ORDERS_URL
 )
@@ -28,7 +28,7 @@ def list(request):
 
     if is_search_form_filled(request, form.fields) and form.is_valid():
         search = form.cleaned_data["query"]
-        
+
         if search:
             orders = orders.search(query=search)
 
@@ -38,7 +38,7 @@ def list(request):
             "purchase": form.cleaned_data["purchase"],
             "status": int(form.cleaned_data["status"]) if form.cleaned_data["status"] else None
         }
-        
+
         filters = {key: value for key, value in filters.items() if value is not None}
         orders = orders.filter(**filters)
     else:
@@ -146,7 +146,12 @@ def buy(request, pk):
     else:
         form = BuyOrderForm(model_to_dict(order))
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/form.html", {
+        "form": form,
+        "page_section": ORDERS,
+        "page_section_url": ORDERS_URL,
+        "page_title": order.title
+    })
 
 
 def set_track_num(request, pk):
@@ -159,13 +164,19 @@ def set_track_num(request, pk):
             instance.save()
 
             messages.success(request, ORDER_TRACK_MSG)
-            return redirect(request.headers.get("Referer"), ORDERS_URL)
+            return redirect(request.session['previous_page'])
         else:
             messages.error(request, DEFAULT_FORM_ERROR)
     else:
+        request.session['previous_page'] = request.META.get('HTTP_REFERER', ORDERS_URL)
         form = SetTrackNumOrderForm(model_to_dict(order))
 
-    return render(request, "order/form.html", {"form": form})
+    return render(request, "order/form.html", {
+        "form": form,
+        "page_section": ORDERS,
+        "page_section_url": ORDERS_URL,
+        "page_title": order.title
+    })
 
 
 def set_delivered(request, pk):
@@ -175,7 +186,7 @@ def set_delivered(request, pk):
         order.save()
 
         messages.success(request, f"{order} {ORDER_STATUS_MSG}")
-        return redirect(request.headers.get("Referer"), ORDERS_URL)
+        return redirect(request.headers.get("Referer", ORDERS_URL))
 
 
 def set_arrived(request, pk):
@@ -185,10 +196,10 @@ def set_arrived(request, pk):
         order.save()
 
         messages.success(request, f"{order} {ORDER_STATUS_MSG}")
-        return redirect(request.headers.get("Referer"), ORDERS_URL)
+        return redirect(request.headers.get("Referer", ORDERS_URL))
 
 
 def delete(request, pk):
     obj = get_object_or_404(Order, pk=pk)
     obj.delete()
-    return redirect(ORDERS_URL)
+    return redirect(request.headers.get("Referer", ORDERS_URL))

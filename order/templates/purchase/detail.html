@@ -186,7 +186,7 @@
                                             <div class="d-flex flex-column justify-content-between">
                                                 <p class="text-xl text-warning text-gradient font-weight-bold mb-1">
                                                     {{ item.order_price }}
-                                                    <img src="/static/assets/img/china.png" style="width: 24px"/>   
+                                                    <img src="/static/assets/img/china.png" style="width: 24px"/>
                                                 </p>
                                                 <p class="text-xs mb-1">
                                                     <span class="badge bg-gradient-info">{{ purchase.exchange }}</span>
@@ -202,7 +202,7 @@
                                                 <div class="d-flex flex-column justify-content-between">
                                                     <p class="text-xl text-danger text-gradient font-weight-bold mb-1">
                                                         {{ item.buy_price }}
-                                                        <img src="/static/assets/img/china.png" style="width: 24px"/>   
+                                                        <img src="/static/assets/img/china.png" style="width: 24px"/>
                                                     </p>
                                                     <p class="text-xs mb-1">
                                                         <span class="badge bg-gradient-success">{{ item.exchange_rate }}</span>
@@ -230,20 +230,18 @@
                                         </td>
                                         <td>
                                             <div class="d-flex flex-column align-items-center text-sm">
-                                                <div>
-                                                    <a class="link-secondary" href="{% url 'customer' pk=item.customer.pk %}">
-                                                        {{ item.customer }}
-                                                    </a>
-                                                    <p class="mb-0">
-                                                        <span class="badge bg-gradient-primary">
-                                                            {% if item.track_num %}
-                                                                <a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a>
-                                                            {% else %}
-                                                                Нет
-                                                            {%endif%}
-                                                        </span>
-                                                    </p>
-                                                </div>
+                                                <a class="link-secondary" href="{% url 'customer' pk=item.customer.pk %}">
+                                                    {{ item.customer }}
+                                                </a>
+                                                <p class="mb-0">
+                                                    <span class="badge bg-gradient-primary">
+                                                        {% if item.track_num %}
+                                                            <a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a>
+                                                        {% else %}
+                                                            Нет
+                                                        {%endif%}
+                                                    </span>
+                                                </p>
                                             </div>
                                         </td>
                                         <td class="text-xs align-middle text-center">
@@ -323,7 +321,7 @@
         </div>
 
         <div class="col-12 mb-4">
-            {% include "common/chart.html" with title="Заказы по клиентам" chart_id="chart-customers" height="300" %}
+            {% include "common/chart.html" with title="Заказы по клиентам" chart_id="chart-customers" height="500" %}
         </div>
 
         <div class="col-12 mb-4">
@@ -399,7 +397,7 @@
         datasets: [
             {
                 label: "Доход",
-                data: [{{ total_tax_amount }}, {{ total_diff_amount }}],
+                data: [{{ total_tax_amount|safe }}, {{ total_dif_amount|safe }}],
                 maxBarThickness: 6,
                 backgroundColor: [
                     '#1fab89',

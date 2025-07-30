@@ -16,11 +16,12 @@ ORDERS_HEADER = [
     "Комиссия %",
     "Комиссия ₽",
     "Цена",
+    "Трек #",
     "Заказчик",
 ]
 
 
-def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None):
+def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None, customer=False):
     CTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     response = HttpResponse(content_type=CTYPE)
     response["Content-Disposition"] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
@@ -49,7 +50,7 @@ def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None):
             sheet.add_image(img)
             sheet.row_dimensions[current_row].height = 200
 
-        sheet.append(obj.get_calculated_data)
+        sheet.append(obj.get_calculated_data(customer))
 
         for cell in sheet[current_row]:
             if cell.value is not None:
@@ -65,6 +66,7 @@ def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None):
     sheet.column_dimensions["C"].width = 30
     sheet.column_dimensions["D"].width = 20
     sheet.column_dimensions["K"].width = 20
+    sheet.column_dimensions["L"].width = 20
 
     wb.save(response)
 

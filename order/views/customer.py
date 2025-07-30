@@ -204,6 +204,6 @@ def export_purchase_to_excel(request, pk, purchase_pk):
     customer = get_object_or_404(Customer, pk=pk)
     customer_purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
 
-    response = export_data_to_excel(customer.name, customer_purchase_orders)
+    response = export_data_to_excel(customer.name, customer_purchase_orders, customer=True)
 
     return response

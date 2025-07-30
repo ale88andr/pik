@@ -68,8 +68,7 @@ class Order(models.Model):
     def exchange_rate(self):
         return self.exchange if self.exchange else self.purchase.exchange
 
-    @property
-    def get_calculated_data(self):
+    def get_calculated_data(self, is_for_customer=False):
         return [
             "",
             self.title,
@@ -77,10 +76,11 @@ class Order(models.Model):
             self.get_status,
             self.order_price,
             self.purchase.exchange,
-            self.calculate_order_exchange_price(),
+            self.calculate_customer_order_exchange_price() if is_for_customer else self.calculate_order_exchange_price(),
             f'{self.customer.tax} %',
             self.calculate_difference_tax(),
-            self.calculate_order_exchange_price() + self.calculate_difference_tax(),
+            (self.calculate_customer_order_exchange_price() if is_for_customer else self.calculate_order_exchange_price()) + self.calculate_difference_tax(),
+            self.track_num,
             self.customer.name
         ]
 
@@ -99,6 +99,9 @@ class Order(models.Model):
 
     def calculate_order_exchange_price(self):
         return round(self.order_price * self.exchange_rate, 2) if self.exchange_rate and self.order_price else 0
+
+    def calculate_customer_order_exchange_price(self):
+        return round(self.order_price * self.purchase.exchange, 2) if self.purchase.exchange and self.order_price else 0
 
     def calculate_difference(self):
         return round(self.difference * self.exchange_rate, 2) if self.difference and self.order_price else 0

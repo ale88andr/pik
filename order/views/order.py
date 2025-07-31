@@ -17,7 +17,7 @@ from order.constants import (
     ORDERS,
     ORDERS_URL
 )
-from order.forms.order import BuyOrderForm, CreateOrderForm, OrderForm, OrderSearchForm, SetTrackNumOrderForm
+from order.forms.order import BuyOrderForm, CreateOrderForm, OrderForm, OrderSearchForm, SetArrivedOrderForm, SetTrackNumOrderForm
 from order.models.order import Order
 
 
@@ -192,11 +192,24 @@ def set_delivered(request, pk):
 def set_arrived(request, pk):
     order = get_object_or_404(Order, id=pk)
     if request.method == "POST":
-        order.status = Order.Status.ARRIVED
-        order.save()
-
-        messages.success(request, f"{order} {ORDER_STATUS_MSG}")
-        return redirect(request.headers.get("Referer", ORDERS_URL))
+        form = SetArrivedOrderForm(request.POST, instance=order)
+        
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.status = Order.Status.ARRIVED
+            instance.save()
+            messages.success(request, f"{order} {ORDER_STATUS_MSG}")
+            return redirect(request.session.get('previous_page', ORDERS_URL))
+    else:
+        request.session['previous_page'] = request.META.get('HTTP_REFERER', ORDERS_URL)
+        form = SetArrivedOrderForm(model_to_dict(order))
+    
+    return render(request, "order/form.html", {
+        "form": form,
+        "page_section": ORDERS,
+        "page_section_url": ORDERS_URL,
+        "page_title": order.title
+    })
 
 
 def delete(request, pk):

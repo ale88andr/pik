@@ -54,7 +54,8 @@ def detail(request, pk):
         ).annotate(
             total=Count("id"),
             sum=Sum("order_price"),
-            tax=Sum("order_price") * customer.tax / 100
+            tax=Sum("order_price") * customer.tax / 100,
+            weight=Sum("weight") / 1000
         )
 
     for purchase in purchases:
@@ -62,6 +63,7 @@ def detail(request, pk):
         purchase["sum_in_rub"] = round(purchase.get("sum") * purchase.get("purchase__exchange"), 2)
         purchase["tax"] = round(purchase.get("tax"), 2)
         purchase["tax_in_rub"] = round(purchase.get("tax") * purchase.get("purchase__exchange"), 2)
+        purchase["weight"] = round(purchase.get("weight"), 2)
 
     return render(
         request,

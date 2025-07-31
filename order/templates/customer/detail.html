@@ -9,56 +9,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Участие в закупках</h6>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2 mt-2">
-                    <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-0" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr role="row" class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
-                                    <th>#</th>
-                                    <th>Закупка</th>
-                                    <th>Заказы</th>
-                                    <th>Курс</th>
-                                    <th>Сумма</th>
-                                    <th>Комиссия</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for purchase in orders %}
-                                    <tr class="align-middle text-center">
-                                        <td scope="row">
-                                            <p class="text-xs text-secondary mb-0">{{ forloop.counter }}</p>
-                                        </td>
-                                        <td>
-                                            <h6 class="mb-0">
-                                                <a class="link-primary" href={% url 'customer-purchase' pk=customer.pk purchase_pk=purchase.purchase__id %}>
-                                                    {{ purchase.purchase__title }}
-                                                </a>
-                                            </h6>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-gradient-success">{{ purchase.total }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-gradient-dark">{{ purchase.purchase__exchange }}</span>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0">
-                                                <span class="text-xl text-secondary font-weight-bolder">{{ purchase.sum|floatformat:2 }} ¥</span> |
-                                                <span class="text-xl text-warning font-weight-bolder">{{ purchase.sum_in_rub }} ₽</span>
-                                            </p>
-                                        </td>
-                                        <td class="d-none d-md-block">
-                                            <p class="mb-0">
-                                                <span class="text-xl text-secondary font-weight-bolder">{{ purchase.tax|floatformat:2 }} ¥</span> |
-                                                <span class="text-xl text-success font-weight-bolder">{{ purchase.tax_in_rub }} ₽</span>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                {% empty %}
-                                    {% include "common/tables/empty.html" with colspan=6 %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                    {% include "common/purchases-customer.html" %}
                 </div>
             </div>
         </div>

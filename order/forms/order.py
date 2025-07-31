@@ -46,6 +46,15 @@ class SetTrackNumOrderForm(OrderForm):
         )
 
 
+class SetArrivedOrderForm(OrderForm):
+
+    class Meta:
+        model = Order
+        fields = (
+            "weight",
+        )
+
+
 class CreateOrderForm(OrderForm):
 
     class Meta:

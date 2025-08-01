@@ -19,6 +19,7 @@ class PurchaseEditForm(BaseForm):
         model = Purchase
         fields = (
             "title",
+            "exchange",
             "opened_date",
             "closed_date",
             "weight",

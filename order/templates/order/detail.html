@@ -35,7 +35,7 @@
                             <span class="font-weight-light">Ссылка: </span><a class="link-success" href="{{ order.url }}" target="_blank">{{ order.url }}</a>
                         </div>
                         <div class="mt-2">
-                            <span class="font-weight-light">Вес: </span>{%if order.weight > 0%}{{ order.weight }}{%else%}Нет данных{%endif%}
+                            <span class="font-weight-light">Вес: </span><span class="badge bg-gradient-light">{%if order.weight > 0%}{{ order.weight }}{%else%}Нет данных{%endif%}</span>
                         </div>
                         <div class="mt-2">
                             <span class="font-weight-light">Дата добавления: </span>{{ order.created_at }}

@@ -1,3 +1,4 @@
+from dataclasses import fields
 from django import forms
 
 from order.forms.base import BaseForm
@@ -47,6 +48,13 @@ class SetTrackNumOrderForm(OrderForm):
 
 
 class SetArrivedOrderForm(OrderForm):
+    
+    track_orders = forms.ModelMultipleChoiceField(
+        label="Другие заказы под этим трек номером",
+        queryset=Order.objects.all(),
+        required=False,
+        help_text="Выделенные заказы будут обработанны как доставленные, с нулевым весом"
+    )
 
     class Meta:
         model = Order

@@ -55,7 +55,7 @@ def detail(request, pk):
             total=Count("id"),
             sum=Sum("order_price"),
             tax=Sum("order_price") * customer.tax / 100,
-            weight=Sum("weight") / 1000
+            weight=Sum("weight")
         )
 
     for purchase in purchases:
@@ -63,7 +63,7 @@ def detail(request, pk):
         purchase["sum_in_rub"] = round(purchase.get("sum") * purchase.get("purchase__exchange"), 2)
         purchase["tax"] = round(purchase.get("tax"), 2)
         purchase["tax_in_rub"] = round(purchase.get("tax") * purchase.get("purchase__exchange"), 2)
-        purchase["weight"] = round(purchase.get("weight"), 2)
+        purchase["weight"] = round(int(purchase.get("weight")) / 1000, 3)
 
     return render(
         request,
@@ -178,6 +178,7 @@ def purchase(request, pk, purchase_pk):
     status_chart_values = [obj["total"] for obj in statuses]
 
     customer_purchase_price = purchase_orders.aggregate(total=Sum("order_price"))
+    customer_purchase_weight = purchase_orders.aggregate(total=Sum("weight"))
     purchase_price = purchase.purchase_orders.aggregate(total=Sum("order_price"))
 
     return render(
@@ -192,6 +193,7 @@ def purchase(request, pk, purchase_pk):
             "statuses": Order.Status.labels,
             "status_chart_labels": status_chart_labels,
             "status_chart_values": status_chart_values,
+            "customer_purchase_weight": round(customer_purchase_weight["total"] / 1000, 3),
             "customer_purchase_price": round(float(customer_purchase_price["total"]), 2),
             "purchase_price": round(float(purchase_price["total"]), 2) - round(float(customer_purchase_price["total"]), 2),
             "page_section": CUSTOMERS,

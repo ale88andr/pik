@@ -193,7 +193,7 @@ def set_arrived(request, pk):
     order = get_object_or_404(Order, id=pk)
     if request.method == "POST":
         form = SetArrivedOrderForm(request.POST, instance=order)
-        
+
         if form.is_valid():
             instance = form.save(commit=False)
             instance.status = Order.Status.ARRIVED
@@ -203,12 +203,12 @@ def set_arrived(request, pk):
     else:
         request.session['previous_page'] = request.META.get('HTTP_REFERER', ORDERS_URL)
         form = SetArrivedOrderForm(model_to_dict(order))
-    
+
     return render(request, "order/form.html", {
         "form": form,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
-        "page_title": order.title
+        "page_title": f"{order.title} - Подтверждение прибытия заказа"
     })
 
 

@@ -59,7 +59,7 @@
 </div>
 
 <div class="row">
-    <div class="col-xxl-10 col-md-12 mb-lg-0 mt-4 mb-4">
+    <div class="col-xxl-10 col-xl-12 mb-lg-0 mt-4 mb-4">
         <div class="card">
             <div class="card-header pb-0 pt-3 bg-transparent">
                 <div class="d-flex justify-content-between align-items-center">
@@ -71,15 +71,15 @@
                         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                             <button type="button" class="btn btn-secondary"><i class="bi bi-download me-1"></i> Экспорт</button>
                             <div class="btn-group" role="group">
-                            <button id="btnGroupDrop4" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop4" style="">
-                                <a href="{% url 'purchase-xls' pk=purchase.pk %}" class="dropdown-item">
-                                    <i class="bi bi-filetype-xls me-2"></i> Данные о закупке
-                                </a>
-                                <a href="{% url 'purchase-cargo-xls' pk=purchase.pk %}" class="dropdown-item">
-                                    <i class="bi bi-filetype-xls me-2"></i> Данные для карго
-                                </a>
-                            </div>
+                                <button id="btnGroupDrop4" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop4" style="">
+                                    <a href="{% url 'purchase-xls' pk=purchase.pk %}" class="dropdown-item">
+                                        <i class="bi bi-filetype-xls me-2"></i> Данные о закупке
+                                    </a>
+                                    <a href="{% url 'purchase-cargo-xls' pk=purchase.pk %}" class="dropdown-item">
+                                        <i class="bi bi-filetype-xls me-2"></i> Данные для карго
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,11 +94,11 @@
                         {% endfor %}
                         <div class="col-6 mt-2">
                             <div class="m-xl-2 mb-2 text-sm font-weight-bold">
-                                Показано: <span class="ms-2 badge bg-gradient-info">{{ total_records }}</span>
+                                Показано: <span class="ms-2 badge bg-gradient-success">{{ total_records }}</span>
                             </div>
                         </div>
                         <div class="col-6 text-end mt-2 mb-2">
-                            <a href="{% url 'purchase' pk=purchase.pk %}" class="btn btn-light me-2 my-sm-0">Сбросить</a>
+                            <a href="{% url 'purchase' pk=purchase.pk %}" class="btn btn-light me-1 my-sm-0">Сбросить</a>
                             <button class="btn btn-dark my-sm-0" type="submit">Поиск</button>
                         </div>
                     </div>
@@ -314,13 +314,13 @@
         </div>
     </div>
 
-    <div class="col-xxl-2 col-lg-12 mb-lg-0 mt-4 mb-4">
+    <div class="col-xxl-2 col-xl-12 mb-lg-0 mt-4 mb-4">
         <div class="col-12 mb-4">
             {% include "common/chart.html" with title="Статус заказов" chart_id="chart-statuses" height="300" %}
         </div>
 
         <div class="col-12 mb-4">
-            {% include "common/chart.html" with title="Заказы по клиентам" chart_id="chart-customers" height="500" %}
+            {% include "common/chart.html" with title="Заказы по клиентам" chart_id="chart-customers" height="600" %}
         </div>
 
         <div class="col-12 mb-4">
@@ -363,7 +363,7 @@
     });
 
     new Chart(ctx2, {
-        type: "polarArea",
+        type: "pie",
         data: {
         labels: {{ customer_chart_labels|safe }},
         datasets: [
@@ -390,7 +390,7 @@
     });
 
     new Chart(ctx3, {
-        type: "pie",
+        type: "polarArea",
         data: {
         labels: ["Комиссия", "Выкуп"],
         datasets: [

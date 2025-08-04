@@ -48,7 +48,7 @@ class SetTrackNumOrderForm(OrderForm):
 
 
 class SetArrivedOrderForm(OrderForm):
-    
+
     track_orders = forms.ModelMultipleChoiceField(
         label="Другие заказы под этим трек номером",
         queryset=Order.objects.all(),
@@ -60,6 +60,7 @@ class SetArrivedOrderForm(OrderForm):
         model = Order
         fields = (
             "weight",
+            "track_orders"
         )
 
 
@@ -113,7 +114,7 @@ class OrderSearchForm(forms.Form):
         self.fields["status"].widget.attrs['class'] = default_select_class
         self.fields["query"].widget.attrs['class'] = default_input_class
         self.fields["purchase"].widget.attrs['class'] = default_select_class
-    
+
     query = forms.CharField(
         label="Поиск",
         required=False,

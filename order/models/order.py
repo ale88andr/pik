@@ -20,7 +20,7 @@ class OrderManager(models.Manager):
         qs = self.get_queryset()
 
         if query:
-            or_lookup = (Q(title__icontains=query) | Q(order_price__icontains=query) | Q(buy_price__icontains=query) | Q(track_num__icontains=query))
+            or_lookup = (Q(title__icontains=query) | Q(order_price__icontains=query.replace(",", ".")) | Q(buy_price__icontains=query.replace(",", ".")) | Q(track_num__icontains=query))
             qs = qs.filter(or_lookup)
 
         return qs.select_related("customer", "purchase", "marketplace")

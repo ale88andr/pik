@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-5 col-xl-5 col-12">
+        <div class="col-lg-6 col-xl-6 col-12">
             <!-- Order details card-->
             <div class="card h-100 mb-4">
                 <div class="card-header pb-0 pt-3">
@@ -26,7 +26,7 @@
                             <span class="font-weight-light">Закупка: </span><a class="link-primary" href="{% url 'purchase' pk=order.purchase.pk %}">{{ order.purchase }}</a>
                         </div>
                         <div class="h6 font-weight-300">
-                            <span class="font-weight-light">Заказчик: </span><a class="link-primary" href="{% url 'customer' pk=order.customer.pk %}">{{ order.customer }}</a>
+                            <span class="font-weight-light">Заказчик: </span><a class="link-primary" href="{% url 'customer-purchase' pk=order.customer.pk purchase_pk=order.purchase.pk %}">{{ order.customer }}</a>
                         </div>
                         <div class="h6 mt-2">
                             <span class="font-weight-light">Платформа: </span><span class="badge bg-gradient-success">{{ order.marketplace }}</span>
@@ -114,7 +114,7 @@
             </div>
         </div>
 
-        <div class="col-lg-4 col-xl-4 col-12 mt-lg-0 mt-xl-0 mt-2">
+        <div class="col-lg-3 col-xl-3 col-12 mt-lg-0 mt-xl-0 mt-2">
             <div class="card h-100 mb-4">
                 <div class="card-header pb-0 px-3">
                     <div class="row">

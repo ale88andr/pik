@@ -198,20 +198,25 @@ def set_arrived(request, pk):
             instance = form.save(commit=False)
             instance.status = Order.Status.ARRIVED
             instance.save()
-            
-            if form.track_orders:
-                for order in form.track_orders:
+
+            if form.cleaned_data["track_orders"]:
+                orders = Order.objects.filter(
+                    track_num=order.track_num,
+                    purchase_id=order.purchase_id,
+                    id__in=form.cleaned_data["track_orders"]
+                ).exclude(id=order.id)
+                for order in orders:
                     order.status = Order.Status.ARRIVED
                     order.weight = 0
                     order.save()
-            
+
             messages.success(request, f"{order} {ORDER_STATUS_MSG}")
             return redirect(request.session.get('previous_page', ORDERS_URL))
     else:
         request.session['previous_page'] = request.META.get('HTTP_REFERER', ORDERS_URL)
         form = SetArrivedOrderForm(model_to_dict(order))
         form.fields["track_orders"].queryset = Order.objects.filter(
-            track_num=order.track_num, 
+            track_num=order.track_num,
             purchase_id=order.purchase_id
         ).exclude(id=order.id)
 

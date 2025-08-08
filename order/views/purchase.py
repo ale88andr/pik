@@ -9,6 +9,7 @@ from order.constants import PURCHASES
 from order.forms.order import CreatePurchaseOrderForm
 from order.forms.purchase import PurchaseInitialForm, PurchaseEditForm, PurchaseCloseForm, PurchaseSearchForm
 from order.forms.search import SearchForm
+from order.models.customer import Customer
 from order.models.order import Order
 from order.models.purchase import Purchase
 
@@ -51,6 +52,12 @@ def list(request):
 
 def detail(request, pk):
     search_form = PurchaseSearchForm(request.GET)
+    purchase_customers = Customer.objects.distinct().filter(
+        customer_orders__purchase_id=pk
+    )
+    
+    search_form.fields["customer"].queryset = purchase_customers
+
     is_form_filled = is_search_form_filled(request, search_form.fields)
     search_orders = None
     sort = request.GET.get("sort", "created_at")
@@ -102,7 +109,7 @@ def detail(request, pk):
     status_chart_labels = [Order.Status.labels[obj["status"]] for obj in statuses]
     status_chart_values = [obj["total"] for obj in statuses]
 
-    customers = orders.values("customer__name").annotate(orders=Count("id"))
+    customers = orders.values("customer__name", "customer__id").annotate(orders=Count("id"))
 
     customer_chart_labels = [obj["customer__name"] for obj in customers]
     customer_chart_values = [obj["orders"] for obj in customers]
@@ -112,6 +119,7 @@ def detail(request, pk):
         "purchase/detail.html",
         {
             "purchase": purchase,
+            "purchase_customers": customers,
             "records": records.order_by(sort),
             "total_records": records.count(),
             "records_info": orders_info,

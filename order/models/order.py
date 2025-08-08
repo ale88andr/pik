@@ -20,8 +20,13 @@ class OrderManager(models.Manager):
         qs = self.get_queryset()
 
         if query:
-            or_lookup = (Q(title__icontains=query) | Q(order_price__icontains=query.replace(",", ".")) | Q(buy_price__icontains=query.replace(",", ".")) | Q(track_num__icontains=query))
-            qs = qs.filter(or_lookup)
+            normalized_query = query.strip().replace(",", ".")
+            qs = qs.filter(
+                Q(title__icontains=query) |
+                Q(order_price__icontains=normalized_query) |
+                Q(buy_price__icontains=normalized_query) |
+                Q(track_num__icontains=query)
+            )
 
         return qs.select_related("customer", "purchase", "marketplace")
 
@@ -39,19 +44,50 @@ class Order(models.Model):
 
     title = models.CharField("Наименование товара", max_length=200)
     img = models.ImageField("Изображение товара", upload_to=IMG_MEDIA_DIR, null=True, blank=True)
-    order_price = models.DecimalField("Цена заказа", max_digits=5, decimal_places=2, help_text="Цена товара при оформлении заказа в ¥")
-    buy_price = models.DecimalField("Цена выкупа", max_digits=5, decimal_places=2, default=0, help_text="Цена товара при выкупе")
-    exchange = models.DecimalField("Курс выкупа", max_digits=5, decimal_places=2, default=0, help_text="Курс валюты при выкупе")
-    weight = models.IntegerField("Вес", null=True, blank=True, default=0, help_text="Вес товара")
-    track_num = models.CharField("Трек номер", max_length=200, null=True, blank=True, help_text="Номер отслеживания заказа")
+
+    order_price = models.DecimalField(
+        "Цена заказа", max_digits=10, decimal_places=2,
+        help_text="Цена товара при оформлении заказа в ¥"
+    )
+    buy_price = models.DecimalField(
+        "Цена выкупа", max_digits=10, decimal_places=2, default=0,
+        help_text="Цена товара при выкупе"
+    )
+    exchange = models.DecimalField(
+        "Курс выкупа", max_digits=6, decimal_places=2, default=0,
+        help_text="Курс валюты при выкупе"
+    )
+    weight = models.PositiveIntegerField(
+        "Вес", null=True, blank=True, default=0,
+        help_text="Вес товара в граммах"
+    )
+    track_num = models.CharField(
+        "Трек номер", max_length=200, null=True, blank=True,
+        help_text="Номер отслеживания заказа"
+    )
     url = models.URLField("Ссылка", help_text="Ссылка на товар")
-    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE, verbose_name="Закупка", related_name="purchase_orders")
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, verbose_name="Покупатель", related_name="customer_orders")
-    marketplace = models.ForeignKey(Marketplace, on_delete=models.PROTECT, verbose_name="Маркетплейс", null=True, blank=True)
-    status = models.IntegerField(choices=Status.choices, default=Status.DRAFT, verbose_name="Статус")
+    purchase = models.ForeignKey(
+        Purchase, on_delete=models.CASCADE,
+        verbose_name="Закупка", related_name="purchase_orders"
+    )
+    customer = models.ForeignKey(
+        Customer, on_delete=models.PROTECT,
+        verbose_name="Покупатель", related_name="customer_orders"
+    )
+    marketplace = models.ForeignKey(
+        Marketplace, on_delete=models.PROTECT,
+        verbose_name="Маркетплейс", null=True, blank=True
+    )
+    status = models.IntegerField(
+        choices=Status.choices, default=Status.DRAFT,
+        verbose_name="Статус"
+    )
 
     buyed_at = models.DateTimeField("Дата выкупа", null=True, blank=True)
-    created_at = models.DateField("Созданно", default=timezone.now)
+    created_at = models.DateField("Создано", default=timezone.now)
+
+    def __str__(self):
+        return f"Заказ №{self.pk} — {self.title or 'без названия'}"
 
     @cached_property
     def display_img(self):
@@ -69,6 +105,14 @@ class Order(models.Model):
         return self.exchange if self.exchange else self.purchase.exchange
 
     def get_calculated_data(self, is_for_customer=False):
+        exchange_price = (
+            self.calculate_customer_order_exchange_price()
+            if is_for_customer
+            else self.calculate_order_exchange_price()
+        )
+
+        total_price = exchange_price + self.calculate_difference_tax()
+
         return [
             "",
             self.title,
@@ -76,10 +120,10 @@ class Order(models.Model):
             self.get_status,
             self.order_price,
             self.purchase.exchange,
-            self.calculate_customer_order_exchange_price() if is_for_customer else self.calculate_order_exchange_price(),
-            f'{self.customer.tax} %',
+            exchange_price,
+            f"{self.customer.tax} %",
             self.calculate_difference_tax(),
-            (self.calculate_customer_order_exchange_price() if is_for_customer else self.calculate_order_exchange_price()) + self.calculate_difference_tax(),
+            total_price,
             self.track_num,
             self.weight,
             self.customer.name
@@ -87,10 +131,7 @@ class Order(models.Model):
 
     @property
     def export_data_for_cargo(self):
-        return [
-            self.title,
-            self.track_num,
-        ]
+        return [self.title, self.track_num,]
 
     def calculate_weight(self):
         return self.weight if self.weight else 0
@@ -151,10 +192,11 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            for mp in Marketplace.objects.all():
-                if self.url.startswith(mp.url):
-                    self.marketplace = mp
-                    break
+            for mps in Marketplace.objects.all():
+                for mp in mps.url.split(","):
+                    if self.url.startswith(mp):
+                        self.marketplace = mp
+                        break
 
         super(Order, self).save(*args, **kwargs)
 

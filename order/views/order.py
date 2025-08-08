@@ -19,11 +19,11 @@ from order.constants import (
     ORDERS_URL
 )
 from order.forms.order import (
-    BuyOrderForm, 
-    CreateOrderForm, 
-    OrderForm, 
-    OrderSearchForm, 
-    SetArrivedOrderForm, 
+    BuyOrderForm,
+    CreateOrderForm,
+    OrderForm,
+    OrderSearchForm,
+    SetArrivedOrderForm,
     SetTrackNumOrderForm
 )
 from order.models.order import Order
@@ -53,7 +53,7 @@ def list(request):
 
         filters = {key: value for key, value in filters.items() if value is not None}
         orders = orders.filter(**filters)
-        
+
     context = {
         "form": form,
         "records": orders.order_by(sort),
@@ -86,7 +86,7 @@ def create(request):
     if is_post:
         if form.is_valid():
             order = form.save()
-            
+
             logger.info(f"Создан заказ #{order.pk} — '{order.title}' пользователем {request.user}, параметры заказа: {order.to_dict}")
             messages.success(request, f"{ORDER_CREATE_MSG} {order.title}")
 
@@ -153,7 +153,7 @@ def buy(request, pk):
             logger.warning(f"Ошибка при выкупе заказа #{order.pk}: {form.errors}")
     else:
         form = BuyOrderForm(instance=order)
-        
+
     context = {
         "form": form,
         "page_section": ORDERS,
@@ -221,7 +221,7 @@ def set_arrived(request, pk):
                     purchase_id=order.purchase_id,
                     id__in=track_orders
                 ).exclude(id=order.id)
-                
+
                 updated_orders = 0
                 for order in orders:
                     order.status = Order.Status.ARRIVED
@@ -229,19 +229,21 @@ def set_arrived(request, pk):
                     order.save()
                     updated_orders += 1
 
+                if updated_orders:
+                    logger.info(f"Обновлены {updated_orders} связанных заказов с трек-номером {order.track_num}")
+
             messages.success(request, f"{order} {ORDER_STATUS_MSG}")
-            logger.info(f"Обновлены {updated_orders} связанных заказов с трек-номером {order.track_num}")
-            
+
             return redirect(request.session.get('previous_page', ORDERS_URL))
     else:
         request.session['previous_page'] = request.META.get('HTTP_REFERER', ORDERS_URL)
         form = SetArrivedOrderForm(model_to_dict(order))
-        
+
         form.fields["track_orders"].queryset = Order.objects.filter(
             track_num=order.track_num,
             purchase_id=order.purchase_id
         ).exclude(id=order.id)
-        
+
     context = {
         "form": form,
         "page_section": ORDERS,

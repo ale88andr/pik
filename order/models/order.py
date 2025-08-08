@@ -81,6 +81,7 @@ class Order(models.Model):
             self.calculate_difference_tax(),
             (self.calculate_customer_order_exchange_price() if is_for_customer else self.calculate_order_exchange_price()) + self.calculate_difference_tax(),
             self.track_num,
+            self.weight,
             self.customer.name
         ]
 

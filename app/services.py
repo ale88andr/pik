@@ -17,6 +17,7 @@ ORDERS_HEADER = [
     "Комиссия ₽",
     "Цена",
     "Трек #",
+    "Вес",
     "Заказчик",
 ]
 
@@ -67,6 +68,7 @@ def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None, customer=
     sheet.column_dimensions["D"].width = 20
     sheet.column_dimensions["K"].width = 20
     sheet.column_dimensions["L"].width = 20
+    sheet.column_dimensions["M"].width = 20
 
     wb.save(response)
 

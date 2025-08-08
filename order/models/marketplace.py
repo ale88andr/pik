@@ -5,7 +5,7 @@ from order.constants import MARKETPLACE, MARKETPLACES
 
 class Marketplace(models.Model):
     title = models.CharField("Наименование", max_length=50, unique=True)
-    url = models.URLField("URL маркетплейса", max_length=100, unique=True, null=True, blank=True)
+    url = models.CharField("URL маркетплейса", max_length=100, unique=True, null=True, blank=True)
 
     def __str__(self):
         return self.title

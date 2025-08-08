@@ -193,10 +193,15 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             for mps in Marketplace.objects.all():
-                for mp in mps.url.split(","):
+                is_matched = False
+
+                for mp in mps.url.split(";"):
                     if self.url.startswith(mp):
-                        self.marketplace = mp
-                        break
+                        self.marketplace = mps
+                        is_matched = True
+
+                if is_matched:
+                    break
 
         super(Order, self).save(*args, **kwargs)
 

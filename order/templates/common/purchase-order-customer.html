@@ -1,0 +1,39 @@
+{% load extras %}
+
+<div class="card h-100">
+    <div class="card-header pb-0 pt-3 bg-transparent">
+        <h6 class="mb-2">Участники:</h6>
+    </div>
+    <div class="card-body p-3">
+        <div class="table-responsive">
+            <table class="table align-items-center ">
+                <tbody>
+                    {% for customer in purchase_customers %}
+                        <tr>
+                            <td class="w-20">
+                                <div class="d-flex px-1 py-1 align-items-center">
+                                    <div>
+                                        <h6 class="text-sm mb-0">
+                                            <a class="link-primary" href="{% url 'customer-purchase' pk=customer.customer__id purchase_pk=purchase.id %}">
+                                                {{ customer.customer__name }}
+                                            </a>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-center">
+                                    <h6 class="text-xs font-weight-light mb-0">
+                                        <span class="badge bg-gradient-primary">{{ customer.orders }}</span>
+                                    </h6>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        {% include "common/tables/empty.html" with colspan=4 %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

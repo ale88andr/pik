@@ -1,0 +1,22 @@
+{% load extras %}
+
+<div class="d-flex flex-column justify-content-center">
+    <p class="text-xl font-weight-bold mb-1">
+        <a class="link-primary" href="{% url 'order' pk=id %}" title="{{ title }}">
+            {{ title|truncatechars:40 }}
+        </a>
+    </p>
+    <p class="text-xs mb-2">
+        <a href="{{ url }}" target="_blank">Ссылка</a>
+    </p>
+    <p class="text-xs mb-0">
+        <span class="badge bg-gradient-primary">{{ status_str }}</span>
+        <span class="badge badge-sm bg-gradient-secondary">{{ marketplace }}</span>
+    </p>
+    <div>
+        <span class="me-2 text-xs font-weight-bold">{{ status|add:1|multiply:20 }}%</span>
+        <div class="progress">
+            <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="{{ status }}" aria-valuemin="0" aria-valuemax="5" style="width: {{ status|add:1|multiply:20 }}%;"></div>
+        </div>
+    </div>
+</div>

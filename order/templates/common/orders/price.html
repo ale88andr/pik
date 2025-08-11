@@ -1,0 +1,15 @@
+<div class="text-nowrap align-middle text-end {% if is_buy %}bg-light{% endif %}">
+    <div class="d-flex flex-column justify-content-between p-1">
+        <p class="text-xl text-gradient font-weight-bold mb-1 text-{% if is_buy %}danger{% else %}warning{% endif %}">
+            {{ price }}
+            <img src="/static/assets/img/china.png" style="width: 24px"/>
+        </p>
+        <p class="text-xs mb-1">
+            <span class="badge bg-gradient-{% if is_buy %}success{% else %}dark{% endif %}">{{ exchange }}</span>
+        </p>
+        <p class="text-xl text-gradient font-weight-bold mb-0 text-{% if is_buy %}primary{% else %}dark{% endif %}">
+            {{ exchange_price }}
+            <img src="/static/assets/img/russia.png" style="width: 24px"/>
+        </p>
+    </div>
+</div>

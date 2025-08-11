@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import model_to_dict
 from django.db.models import Sum, Count
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from app.services import export_data_to_excel, export_to_excel
 from app.utils import is_search_form_filled
@@ -113,6 +114,21 @@ def detail(request, pk):
 
     customer_chart_labels = [obj["customer__name"] for obj in customers]
     customer_chart_values = [obj["orders"] for obj in customers]
+    
+    records = records.order_by(sort)
+    total = records.count()
+    
+    # Pagination
+    
+    page_num = request.GET.get('page', 1)
+    paginator = Paginator(records, 20)
+
+    try:
+        records = paginator.page(page_num)
+    except PageNotAnInteger:
+        records = paginator.page(1)
+    except EmptyPage:
+        records = paginator.page(paginator.num_pages)
 
     return render(
         request,
@@ -120,14 +136,15 @@ def detail(request, pk):
         {
             "purchase": purchase,
             "purchase_customers": customers,
-            "records": records.order_by(sort),
-            "total_records": records.count(),
+            "records": records,
+            "total_records": total,
             "records_info": orders_info,
             "total_amount_rub": total_amount_rub,
             "total_tax_amount": total_tax_amount,
             "total_dif_amount": total_dif_amount,
             "total_profit": total_profit,
             "form": search_form,
+            "current_page": records.number - 1,
             "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
             "page_title": purchase.title,

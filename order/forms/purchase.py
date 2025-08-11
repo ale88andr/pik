@@ -11,6 +11,9 @@ class PurchaseInitialForm(BaseForm):
     class Meta:
         model = Purchase
         fields = ("title", "opened_date", "exchange")
+        widgets = {
+            "opened_date": forms.widgets.DateInput(attrs={'type': 'date'})
+        }
 
 
 class PurchaseEditForm(BaseForm):
@@ -27,6 +30,10 @@ class PurchaseEditForm(BaseForm):
             "dilivery_cost2",
             "other_expenses",
         )
+        widgets = {
+            "opened_date": forms.widgets.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+            "closed_date": forms.widgets.DateInput(format="%Y-%m-%d", attrs={"type": "date"})
+        }
 
 
 class PurchaseCloseForm(BaseForm):

@@ -26,6 +26,7 @@ class OrderForm(BaseForm):
     class Meta:
         model = Order
         fields = "__all__"
+        exclude = ("created_at", "buyed_at")
 
 
 class BuyOrderForm(OrderForm):

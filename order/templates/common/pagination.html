@@ -1,0 +1,38 @@
+<div class="mt-4 mb-4 text-center align-content-center">
+    <p class="text-secondary text-xs">
+        Страница <strong class="text-primary">{{ records.number }}</strong> из <strong class="text-primary">{{ records.paginator.num_pages }}</strong>
+    </p>
+    <div class="btn-group" role="group">
+
+        {% if records.has_previous %}
+            <a href="?page={{ records.previous_page_number }}" class="btn btn-primary">Назад</a>
+
+            {% if records.number > 3 %}
+                <a href="?page=1" class="btn btn-outline-primary">1</a>
+                {% if records.number > 4 %}
+                    <a href="#" class="btn btn-outline-primary">...</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% for num in records.paginator.page_range %}
+            {% if records.number == num %}
+                <a href="?page={{ num }}" class="btn btn-primary">{{ num }}</a>
+            {% elif num > records.number|add:'-3' and num < records.number|add:'3' %}
+                <a href="?page={{ num }}" class="btn btn-outline-primary">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if records.has_next %}
+            {% if records.number < records.paginator.num_pages|add:'-3' %}
+                <a href="#" class="btn btn-outline-primary">...</a>
+                <a href="?page={{ records.paginator.num_pages }}" class="btn btn-outline-primary">{{ records.paginator.num_pages }}</a>
+            {% elif records.number < records.paginator.num_pages|add:'-2' %}
+                <a href="?page={{ records.paginator.num_pages }}" class="btn btn-outline-primary">{{ records.paginator.num_pages }}</a>
+            {% endif %}
+            
+            <a href="?page={{ records.next_page_number }}" class="btn btn-primary">Вперед</a>
+        {% endif %}
+
+    </div>
+</div>

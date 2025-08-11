@@ -4,6 +4,7 @@ from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import model_to_dict
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from app.utils import is_search_form_filled
 from order.constants import (
@@ -34,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 def list(request):
     form = OrderSearchForm(request.GET)
-    sort = request.GET.get("sort", "created_at")
+    sort = request.GET.get("sort", "-created_at")
     orders = Order.objects.all()
 
     if is_search_form_filled(request, form.fields) and form.is_valid():
@@ -53,11 +54,26 @@ def list(request):
 
         filters = {key: value for key, value in filters.items() if value is not None}
         orders = orders.filter(**filters)
+        
+    orders = orders.order_by(sort)
+    total = orders.count()
+        
+    # Pagination
+    page_num = request.GET.get('page', 1)
+    paginator = Paginator(orders, 15)
+
+    try:
+        orders = paginator.page(page_num)
+    except PageNotAnInteger:
+        orders = paginator.page(1)
+    except EmptyPage:
+        orders = paginator.page(paginator.num_pages)
 
     context = {
         "form": form,
-        "records": orders.order_by(sort),
-        "total": orders.count(),
+        "records": orders,
+        "total": total,
+        "current_page": orders.number - 1,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
         "page_title": ORDER_LIST_TITLE

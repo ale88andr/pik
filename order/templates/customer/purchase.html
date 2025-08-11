@@ -47,6 +47,11 @@
                                     <a href="?sort=order_price{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
                                     <a href="?sort=-order_price{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
                                 </th>
+                                <th scope="col">
+                                    Цена выкупа
+                                    <a href="?sort=order_price{% if search_query %}&query={{ search_query }}{% endif %}" class="ms-1 text-decoration-none"><i class="bi bi-sort-alpha-down"></i></a>
+                                    <a href="?sort=-order_price{% if search_query %}&query={{ search_query }}{% endif %}" class="text-decoration-none"><i class="bi bi-sort-alpha-up"></i></a>
+                                </th>
                                 <th scope="col">Трэк #</th>
                                 <th scope="col">Действия</th>
                             </tr>
@@ -58,132 +63,32 @@
                                         <p class="text-xs text-secondary mb-0 text-center">{{ forloop.counter }}</p>
                                     </th>
                                     <td class="text-center">
-                                        <img
-                                            src="/media/{{item.img}}"
-                                            alt=""
-                                            style="width: 48px"
-                                            data-bs-toggle="offcanvas"
-                                            href="#img-{{ item.id }}"
-                                            role="button"
-                                            aria-controls="show"
-                                        />
-                                        <div class="offcanvas offcanvas-start text-wrap" tabindex="-1" id="img-{{ item.id }}" aria-labelledby="img-{{ item.id }}Label">
-                                            <div class="offcanvas-header">
-                                                <h5 class="offcanvas-title text-start" id="{{ item.id }}Label">{{ item.title }}</h5>
-                                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                            </div>
-                                            <div class="offcanvas-body">
-                                                <img
-                                                    src="/media/{{item.img}}"
-                                                    alt=""
-                                                    style="width: 100%"
-                                                />
-                                            </div>
-                                        </div>
+                                        {% include "common/orders/image.html" with img=item.img id=item.id url=item.url title=item.title %}
                                     </td>
                                     <td class="col-md-2">
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <p class="text-xl font-weight-bold mb-1">
-                                                    <a class="link-primary" href="{% url 'order' pk=item.pk %}">
-                                                        {{ item.title|truncatechars:40 }}
-                                                    </a>
-                                                </p>
-                                                <p class="text-xs mb-2">
-                                                    <a href="{{ item.url }}" target="_blank">Ссылка</a>
-                                                </p>
-                                                <p class="text-xs mb-0">
-                                                    <span class="badge bg-gradient-primary">{{ item.get_status }}</span>
-                                                    <span class="badge badge-sm bg-gradient-secondary">{{ item.marketplace }}</span>
-                                                </p>
-                                                <div class="d-flex align-items-center mt-2">
-                                                    <span class="me-2 text-xs font-weight-bold">{{item.status|add:1|multiply:20}}%</span>
-                                                    <div class="progress">
-                                                      <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="{{item.status}}" aria-valuemin="0" aria-valuemax="5" style="width: {{item.status|add:1|multiply:20}}%;"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {% include "common/orders/info.html" with id=item.pk title=item.title url=item.url status_str=item.get_status status=item.status marketplace=item.marketplace %}
                                     </td>
-                                    <td class="text-nowrap align-middle text-end">
-                                        <div class="d-flex flex-column justify-content-between">
-                                            <p class="text-xl text-warning text-gradient font-weight-bold mb-1">
-                                                {{ item.order_price }}
-                                                <img src="/static/assets/img/china.png" style="width: 24px"/>
-                                            </p>
-                                            <p class="text-xs mb-1">
-                                                <span class="badge bg-gradient-info">{{ purchase.exchange }}</span>
-                                            </p>
-                                            <p class="text-xl text-dark text-gradient font-weight-bold mb-0">
-                                                {{ item.calculate_order_exchange_price }}
-                                                <img src="/static/assets/img/russia.png" style="width: 24px"/>
-                                            </p>
-                                        </div>
+                                    <td>
+                                        {% include "common/orders/price.html" with price=item.order_price exchange=item.purchase.exchange exchange_price=item.calculate_order_exchange_price %}
+                                    </td>
+                                    <td>
+                                        {% if item.buy_price %}
+                                            {% include "common/orders/price.html" with price=item.buy_price exchange=item.exchange_rate exchange_price=item.calculate_buy_exchange_price is_buy=True %}
+                                        {% endif %}
                                     </td>
                                     <td class="text-sm align-middle text-center">
-                                        {% if item.track_num %}
-                                            <span class="badge bg-gradient-info"><a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a></span>
-                                        {% else %}
-                                            Нет
-                                        {%endif%}
+                                        <p class="mb-0">
+                                            <span class="badge bg-gradient-primary">
+                                                {% if item.track_num %}
+                                                    <a class="link-light" href="https://www.ordertracker.com/ru/track/{{ item.track_num }}" target="_blank">{{ item.track_num }}</a>
+                                                {% else %}
+                                                    Нет
+                                                {%endif%}
+                                            </span>
+                                        </p>
                                     </td>
-                                    <td class="text-xs align-middle text-center">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <div>
-                                                <a class="link-secondary" href="{% url 'order_edit' pk=item.pk %}" class="me-1">
-                                                    <i class="bi bi-pencil-square me-1"></i>Изменить
-                                                </a>
-                                                <a class="link-danger" data-bs-toggle="offcanvas" href="#{{ item.id }}" role="button" aria-controls="delete">
-                                                    <i class="bi bi-trash me-1"></i>Удалить
-                                                </a>
-                                                <div class="offcanvas offcanvas-start text-wrap" tabindex="-1" id="{{ item.id }}" aria-labelledby="{{ item.id }}Label">
-                                                    <div class="offcanvas-header">
-                                                        <h5 class="offcanvas-title text-start" id="{{ item.id }}Label">{{ item.title }}</h5>
-                                                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="offcanvas-body text-start">
-                                                        <div>
-                                                            Это действие безвозвратно удалит объект из базы данных!
-                                                        </div>
-                                                        <div class="mt-3">
-                                                            <a href="{% url 'order_delete' pk=item.pk %}" class="btn btn-danger me-1">Подтвердить</a>
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mt-2 pb-0">
-                                                    {% if not item.buy_price %}
-                                                        <a href="{% url 'order-buy' pk=item.pk %}" class="btn btn-sm btn-primary mt-1">
-                                                            <i class="bi bi-bag me-1"></i> Выкупить товар
-                                                        </a>
-                                                    {% endif %}
-
-                                                    {% if item.buy_price and not item.track_num %}
-                                                        <a href="{% url 'order-set-track' pk=item.pk %}" class="btn btn-sm btn-dark mt-1">
-                                                            <i class="bi bi-truck me-1"></i> Добавить трэк
-                                                        </a>
-                                                    {% else %}
-                                                        {% if item.status == 2 %}
-                                                            <form method="post" action="{% url 'order-set-delivered' pk=item.pk %}">
-                                                                {% csrf_token %}
-                                                                <button type="submit" class="btn btn-sm btn-secondary mt-1">
-                                                                    <i class="bi bi-truck me-1"></i>
-                                                                    Доставлен в ТК
-                                                                </button>
-                                                            </form>
-                                                        {% elif item.status == 3 %}
-                                                            <a href="{% url 'order-set-arrived' pk=item.pk %}" class="btn btn-sm btn-success mt-1">
-                                                                <i class="bi bi-bookmark-check me-1"></i> Прибыл
-                                                            </a>
-                                                        {% elif item.status == 4 %}
-                                                            <span class="btn btn-sm btn-light mt-1">
-                                                                Вес: {{ item.weight }} г.
-                                                            </span>
-                                                        {% endif %}
-                                                    {% endif %}  
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <td>
+                                        {% include "common/orders/actions.html" with id=item.pk title=item.title track_num=item.track_num buy_price=item.buy_price status=item.status weight=item.weight %}
                                     </td>
                                 </tr>
                             {% empty %}

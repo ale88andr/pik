@@ -1,0 +1,14 @@
+<div class="d-flex flex-column align-items-center text-sm">
+    <a class="link-secondary" href="{% url 'customer' pk=id %}">
+        {{ customer }}
+    </a>
+    <p class="mb-0">
+        <span class="badge bg-gradient-primary">
+            {% if track %}
+                <a class="link-light" href="https://www.ordertracker.com/ru/track/{{ track }}" target="_blank">{{ track }}</a>
+            {% else %}
+                Нет
+            {%endif%}
+        </span>
+    </p>
+</div>

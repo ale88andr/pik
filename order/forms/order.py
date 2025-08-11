@@ -89,6 +89,8 @@ class CreatePurchaseOrderForm(OrderForm):
             "order_price",
             "customer"
         )
+        widgets = {"img": forms.HiddenInput()}
+        labels = {"img": ""}
 
 
 class CreatePurchaseCustomerOrderForm(OrderForm):

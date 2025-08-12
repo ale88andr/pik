@@ -17,6 +17,8 @@
         <link rel="stylesheet" href="{% static 'assets/css/bootstrap-icons.min.css' %}" />
         <!-- CSS Files -->
         <link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}" />
+        <link rel="stylesheet" href="{% static 'assets/css/vendor/select2/select2.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'assets/css/vendor/select2/select2-bootstrap-5-theme.css' %}" />
     </head>
 
     <body class="g-sidenav-show bg-gray-200">
@@ -118,9 +120,16 @@
             </div>
         </main>
 
-    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
-    <script src="{% static 'assets/js/dashboard.min.js' %}"></script>
+        <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+        <script src="{% static 'assets/js/dashboard.min.js' %}"></script>
+        <script src="{% static 'assets/js/vendor/jquery/jquery-3.7.1.min.js' %}"></script>
+        <script src="{% static 'assets/js/vendor/select2/select2.full.min.js' %}"></script>
+        <script>
+            $(document).ready(function() {
+                $('.form-select').select2({theme: 'bootstrap-5'});
+            });
+        </script>
     </body>
 
 </html>

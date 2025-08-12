@@ -168,7 +168,7 @@ def purchase(request, pk, purchase_pk):
     sort = request.GET.get("sort", "created_at")
     customer = get_object_or_404(Customer, pk=pk)
     purchase = get_object_or_404(Purchase, pk=purchase_pk)
-    purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
+    purchase_orders = customer.customer_orders.select_related("marketplace", "purchase").filter(purchase=purchase_pk)
 
     # Charts
 

@@ -86,7 +86,7 @@ def detail(request, pk):
         search_orders = search_orders.filter(purchase=pk)
 
     purchase = get_object_or_404(Purchase, pk=pk)
-    orders = purchase.purchase_orders.all()
+    orders = purchase.purchase_orders.select_related("customer", "marketplace").all()
     orders_info = purchase.purchase_orders.aggregate(
         total_amount=Sum("order_price"),
         number_of_customers=Count("customer_id", distinct=True),

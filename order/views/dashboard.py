@@ -21,7 +21,7 @@ def index(request):
         float(round(p.cost_of_order_price * p.exchange, 2)) for p in purchases
     ]
 
-    orders = Order.objects.order_by("-created_at")[:DASHBOARD_ORD_LIMIT]
+    orders = Order.objects.select_related("customer").order_by("-created_at")[:DASHBOARD_ORD_LIMIT]
     
     context = {
         "orders": orders,

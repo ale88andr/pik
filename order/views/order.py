@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 def list(request):
     form = OrderSearchForm(request.GET)
     sort = request.GET.get("sort", "-created_at")
-    orders = Order.objects.all()
+    orders = Order.objects.select_related("purchase", "customer", "marketplace").all()
 
     if is_search_form_filled(request, form.fields) and form.is_valid():
         search = form.cleaned_data.get("query")

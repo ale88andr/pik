@@ -137,7 +137,10 @@ class Order(models.Model):
         return self.weight if self.weight else 0
 
     def calculate_buy_exchange_price(self):
-        return round(self.buy_price * self.exchange_rate, 2) if self.exchange_rate and self.buy_price else 0
+        if not self.buy_price or not self.exchange_rate:
+            return 0
+
+        return round(float(self.buy_price) * float(self.exchange_rate), 2)
 
     def calculate_order_exchange_price(self):
         return round(self.order_price * self.exchange_rate, 2) if self.exchange_rate and self.order_price else 0

@@ -8,7 +8,11 @@ from app.services import export_data_to_excel, export_to_excel
 from app.utils import is_search_form_filled
 from order.constants import PURCHASES
 from order.forms.order import CreatePurchaseOrderForm
-from order.forms.purchase import PurchaseInitialForm, PurchaseEditForm, PurchaseCloseForm, PurchaseSearchForm
+from order.forms.purchase import (
+    PurchaseInitialForm,
+    PurchaseEditForm,
+    PurchaseSearchForm,
+)
 from order.forms.search import SearchForm
 from order.models.customer import Customer
 from order.models.order import Order
@@ -33,7 +37,7 @@ def list(request):
             num_of_customers=Count("purchase_orders__customer_id", distinct=True),
             cost_of_order_price=Sum("purchase_orders__order_price"),
             sum_of_weight=Sum("purchase_orders__weight"),
-            num_of_orders=Count("purchase_orders")
+            num_of_orders=Count("purchase_orders"),
         )
 
     return render(
@@ -46,8 +50,8 @@ def list(request):
             "total": orders.count(),
             "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Список закупок"
-        }
+            "page_title": "Список закупок",
+        },
     )
 
 
@@ -56,7 +60,7 @@ def detail(request, pk):
     purchase_customers = Customer.objects.distinct().filter(
         customer_orders__purchase_id=pk
     )
-    
+
     search_form.fields["customer"].queryset = purchase_customers
 
     is_form_filled = is_search_form_filled(request, search_form.fields)
@@ -69,7 +73,11 @@ def detail(request, pk):
         search = search_form.cleaned_data["query"]
         customer_id = search_form.cleaned_data["customer"]
         marketplace_id = search_form.cleaned_data["marketplace"]
-        status = int(search_form.cleaned_data["status"]) if search_form.cleaned_data["status"] else None
+        status = (
+            int(search_form.cleaned_data["status"])
+            if search_form.cleaned_data["status"]
+            else None
+        )
 
         if search:
             search_orders = search_orders.search(query=search)
@@ -110,16 +118,18 @@ def detail(request, pk):
     status_chart_labels = [Order.Status.labels[obj["status"]] for obj in statuses]
     status_chart_values = [obj["total"] for obj in statuses]
 
-    customers = orders.values("customer__name", "customer__id").annotate(orders=Count("id"))
+    customers = orders.values("customer__name", "customer__id").annotate(
+        orders=Count("id")
+    )
 
     customer_chart_labels = [obj["customer__name"] for obj in customers]
     customer_chart_values = [obj["orders"] for obj in customers]
-    
+
     records = records.order_by(sort)
     total = records.count()
-    
+
     # Pagination
-    
+
     page_num = request.GET.get('page', 1)
     paginator = Paginator(records, 20)
 
@@ -151,8 +161,8 @@ def detail(request, pk):
             "status_chart_values": status_chart_values,
             "status_chart_labels": status_chart_labels,
             "customer_chart_labels": customer_chart_labels,
-            "customer_chart_values": customer_chart_values
-        }
+            "customer_chart_values": customer_chart_values,
+        },
     )
 
 
@@ -173,8 +183,8 @@ def create(request):
             "form": form,
             "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Создание новой закупки"
-        }
+            "page_title": "Создание новой закупки",
+        },
     )
 
 
@@ -189,11 +199,13 @@ def create_purchase_order(request, pk):
             messages.success(request, f"Заказ '{order.title}' оформлен")
 
             if "add_another" in request.POST:
-                return redirect("create-purchase-order", pk=pk)
+                return redirect("purchase-new-order", pk=pk)
 
             return redirect("purchase", pk=obj.pk)
         else:
-            messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
+            messages.error(
+                request, "Возникли ошибки при заполнении формы, исправте их!"
+            )
     else:
         form = CreatePurchaseOrderForm()
 
@@ -205,8 +217,8 @@ def create_purchase_order(request, pk):
             "is_new": True,
             "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Добавление нового заказа"
-        }
+            "page_title": "Добавление нового заказа",
+        },
     )
 
 
@@ -230,8 +242,8 @@ def edit(request, pk):
             "form": form,
             "page_section": PURCHASES,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Редактирование данных закупки"
-        }
+            "page_title": "Редактирование данных закупки",
+        },
     )
 
 
@@ -242,7 +254,6 @@ def delete(request, pk):
 
 
 def export_purchase_to_excel(request, pk):
-
     # Query the Person model to get all records
     purchase = get_object_or_404(Purchase, pk=pk)
     purchase_orders = purchase.purchase_orders.order_by("customer_id")
@@ -259,10 +270,6 @@ def export_purchase_tracknum_to_excel(request, pk):
     header = ["Наименование", "Трек номер"]
     data = [order.export_data_for_cargo for order in purchase_orders]
 
-    response = export_to_excel(
-        f"{purchase.title} - трек номера",
-        data,
-        header
-    )
+    response = export_to_excel(f"{purchase.title} - трек номера", data, header)
 
     return response

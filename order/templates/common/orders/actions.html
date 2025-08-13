@@ -1,6 +1,6 @@
 <div class="d-flex flex-column align-items-center text-xs">
     <div class="nowrap">
-        <a href="{% url 'order_edit' pk=id %}" class="link-secondary font-weight-bold text-xs me-1">
+        <a href="{% url 'order-edit' pk=id %}" class="link-secondary font-weight-bold text-xs me-1">
             <i class="bi bi-pencil-square me-1"></i>Изменить
         </a>
         <a class="link-danger font-weight-bold text-xs" data-bs-toggle="offcanvas" href="#{{ id }}" role="button" aria-controls="delete">
@@ -17,7 +17,7 @@
                 Это действие безвозвратно <br>удалит объект из базы данных!
             </div>
             <div class="mt-3">
-                <a href="{% url 'order_delete' pk=id %}" class="btn btn-danger me-1">Подтвердить</a>
+                <a href="{% url 'order-delete' pk=id %}" class="btn btn-danger me-1">Подтвердить</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Отменить</button>
             </div>
         </div>

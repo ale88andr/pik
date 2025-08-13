@@ -17,7 +17,7 @@ from order.constants import (
     ORDER_TRACK_MSG,
     ORDER_UPDATE_MSG,
     ORDERS,
-    ORDERS_URL
+    ORDERS_URL,
 )
 from order.forms.order import (
     BuyOrderForm,
@@ -25,7 +25,7 @@ from order.forms.order import (
     OrderForm,
     OrderSearchForm,
     SetArrivedOrderForm,
-    SetTrackNumOrderForm
+    SetTrackNumOrderForm,
 )
 from order.models.order import Order
 
@@ -49,15 +49,15 @@ def list(request):
             "customer": form.cleaned_data.get("customer"),
             "marketplace": form.cleaned_data.get("marketplace"),
             "purchase": form.cleaned_data.get("purchase"),
-            "status": int(status) if status else None
+            "status": int(status) if status else None,
         }
 
         filters = {key: value for key, value in filters.items() if value is not None}
         orders = orders.filter(**filters)
-        
+
     orders = orders.order_by(sort)
     total = orders.count()
-        
+
     # Pagination
     page_num = request.GET.get('page', 1)
     paginator = Paginator(orders, 15)
@@ -76,7 +76,7 @@ def list(request):
         "current_page": orders.number - 1,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
-        "page_title": ORDER_LIST_TITLE
+        "page_title": ORDER_LIST_TITLE,
     }
 
     return render(request, "order/list.html", context)
@@ -89,7 +89,7 @@ def detail(request, pk):
         "order": order,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
-        "page_title": order.title
+        "page_title": order.title,
     }
 
     return render(request, "order/detail.html", context)
@@ -97,16 +97,23 @@ def detail(request, pk):
 
 def create(request):
     is_post = request.method == "POST"
-    form = CreateOrderForm(request.POST, files=request.FILES) if is_post else CreateOrderForm()
+    form = (
+        CreateOrderForm(request.POST, files=request.FILES)
+        if is_post
+        else CreateOrderForm()
+    )
 
     if is_post:
         if form.is_valid():
             order = form.save()
 
-            logger.info(f"Создан заказ #{order.pk} — '{order.title}' пользователем {request.user}, параметры заказа: {order.to_dict}")
+            logger.info(
+                f"Создан заказ #{order.pk} — '{order.title}' пользователем "
+                f"{request.user}, параметры заказа: {order.to_dict}"
+            )
             messages.success(request, f"{ORDER_CREATE_MSG} {order.title}")
 
-            target = "create-order" if "add_another" in request.POST else ORDERS_URL
+            target = "order-new" if "add_another" in request.POST else ORDERS_URL
             return redirect(target)
         else:
             messages.error(request, DEFAULT_FORM_ERROR)
@@ -116,7 +123,7 @@ def create(request):
         "is_new": True,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
-        "page_title": ORDER_ADD_TITLE
+        "page_title": ORDER_ADD_TITLE,
     }
 
     return render(request, "order/form.html", context)
@@ -144,8 +151,8 @@ def edit(request, pk):
             "form": form,
             "page_section": ORDERS,
             "page_section_url": ORDERS_URL,
-            "page_title": f"{ORDER_EDIT_TITLE} {obj}"
-        }
+            "page_title": f"{ORDER_EDIT_TITLE} {obj}",
+        },
     )
 
 
@@ -174,7 +181,7 @@ def buy(request, pk):
         "form": form,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
-        "page_title": order.title
+        "page_title": order.title,
     }
 
     return render(request, "order/form.html", context)
@@ -198,11 +205,11 @@ def set_track_num(request, pk):
         request.session['previous_page'] = request.META.get('HTTP_REFERER', ORDERS_URL)
         form = SetTrackNumOrderForm(model_to_dict(order))
 
-    context =  {
+    context = {
         "form": form,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
-        "page_title": order.title
+        "page_title": order.title,
     }
 
     return render(request, "order/form.html", context)
@@ -235,7 +242,7 @@ def set_arrived(request, pk):
                 orders = Order.objects.filter(
                     track_num=order.track_num,
                     purchase_id=order.purchase_id,
-                    id__in=track_orders
+                    id__in=track_orders,
                 ).exclude(id=order.id)
 
                 updated_orders = 0
@@ -246,7 +253,10 @@ def set_arrived(request, pk):
                     updated_orders += 1
 
                 if updated_orders:
-                    logger.info(f"Обновлены {updated_orders} связанных заказов с трек-номером {order.track_num}")
+                    logger.info(
+                        f"Обновлены {updated_orders} "
+                        f"связанных заказов с трек-номером {order.track_num}"
+                    )
 
             messages.success(request, f"{order} {ORDER_STATUS_MSG}")
 
@@ -256,15 +266,14 @@ def set_arrived(request, pk):
         form = SetArrivedOrderForm(model_to_dict(order))
 
         form.fields["track_orders"].queryset = Order.objects.filter(
-            track_num=order.track_num,
-            purchase_id=order.purchase_id
+            track_num=order.track_num, purchase_id=order.purchase_id
         ).exclude(id=order.id)
 
     context = {
         "form": form,
         "page_section": ORDERS,
         "page_section_url": ORDERS_URL,
-        "page_title": f"{order.title} - Подтверждение прибытия заказа"
+        "page_title": f"{order.title} - Подтверждение прибытия заказа",
     }
 
     return render(request, "order/form.html", context)

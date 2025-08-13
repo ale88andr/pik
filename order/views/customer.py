@@ -39,30 +39,31 @@ def index(request):
             "total": customers.count(),
             "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Список клиентов"
-        }
+            "page_title": "Список клиентов",
+        },
     )
 
 
 def detail(request, pk):
     customer = get_object_or_404(Customer, pk=pk)
     purchases = customer.customer_orders.values(
-        "purchase__title",
-        "purchase__id",
-        "purchase",
-        "purchase__exchange"
-        ).annotate(
-            total=Count("id"),
-            sum=Sum("order_price"),
-            tax=Sum("order_price") * customer.tax / 100,
-            weight=Sum("weight")
-        )
+        "purchase__title", "purchase__id", "purchase", "purchase__exchange"
+    ).annotate(
+        total=Count("id"),
+        sum=Sum("order_price"),
+        tax=Sum("order_price") * customer.tax / 100,
+        weight=Sum("weight"),
+    )
 
     for purchase in purchases:
         purchase["sum"] = round(purchase.get("sum"), 2)
-        purchase["sum_in_rub"] = round(purchase.get("sum") * purchase.get("purchase__exchange"), 2)
+        purchase["sum_in_rub"] = round(
+            purchase.get("sum") * purchase.get("purchase__exchange"), 2
+        )
         purchase["tax"] = round(purchase.get("tax"), 2)
-        purchase["tax_in_rub"] = round(purchase.get("tax") * purchase.get("purchase__exchange"), 2)
+        purchase["tax_in_rub"] = round(
+            purchase.get("tax") * purchase.get("purchase__exchange"), 2
+        )
         purchase["weight"] = round(int(purchase.get("weight")) / 1000, 3)
 
     return render(
@@ -73,8 +74,8 @@ def detail(request, pk):
             "orders": purchases,
             "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": customer
-        }
+            "page_title": customer,
+        },
     )
 
 
@@ -95,8 +96,8 @@ def create(request):
             "form": form,
             "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Добавление нового клиента"
-        }
+            "page_title": "Добавление нового клиента",
+        },
     )
 
 
@@ -112,11 +113,13 @@ def create_order(request, pk, purchase_pk):
             messages.success(request, f"Заказ '{order.title}' оформлен")
 
             if "add_another" in request.POST:
-                return redirect("create-customer-order", pk=pk, purchase_pk=purchase.pk)
+                return redirect("customer-new-order", pk=pk, purchase_pk=purchase.pk)
 
             return redirect("customer-purchase", pk=pk, purchase_pk=purchase_pk)
         else:
-            messages.error(request, "Возникли ошибки при заполнении формы, исправте их!")
+            messages.error(
+                request, "Возникли ошибки при заполнении формы, исправте их!"
+            )
     else:
         form = CreatePurchaseCustomerOrderForm()
 
@@ -128,8 +131,8 @@ def create_order(request, pk, purchase_pk):
             "is_new": True,
             "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Добавление нового клиента"
-        }
+            "page_title": "Добавление нового клиента",
+        },
     )
 
 
@@ -153,8 +156,8 @@ def edit(request, pk):
             "form": form,
             "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": "Изменение данных клиента"
-        }
+            "page_title": "Изменение данных клиента",
+        },
     )
 
 
@@ -168,7 +171,9 @@ def purchase(request, pk, purchase_pk):
     sort = request.GET.get("sort", "created_at")
     customer = get_object_or_404(Customer, pk=pk)
     purchase = get_object_or_404(Purchase, pk=purchase_pk)
-    purchase_orders = customer.customer_orders.select_related("marketplace", "purchase").filter(purchase=purchase_pk)
+    purchase_orders = customer.customer_orders.select_related(
+        "marketplace", "purchase"
+    ).filter(purchase=purchase_pk)
 
     # Charts
 
@@ -193,21 +198,28 @@ def purchase(request, pk, purchase_pk):
             "statuses": Order.Status.labels,
             "status_chart_labels": status_chart_labels,
             "status_chart_values": status_chart_values,
-            "customer_purchase_weight": round(customer_purchase_weight["total"] / 1000, 3),
-            "customer_purchase_price": round(float(customer_purchase_price["total"]), 2),
-            "purchase_price": round(float(purchase_price["total"]), 2) - round(float(customer_purchase_price["total"]), 2),
+            "customer_purchase_weight": round(
+                customer_purchase_weight["total"] / 1000, 3
+            ),
+            "customer_purchase_price": round(
+                float(customer_purchase_price["total"]), 2
+            ),
+            "purchase_price": round(float(purchase_price["total"]), 2)
+            - round(float(customer_purchase_price["total"]), 2),
             "page_section": CUSTOMERS,
             "page_section_url": PAGE_SECTION_URL,
-            "page_title": f"{customer}: {purchase}"
-        })
+            "page_title": f"{customer}: {purchase}",
+        },
+    )
 
 
 def export_purchase_to_excel(request, pk, purchase_pk):
-
     # Query the Person model to get all records
     customer = get_object_or_404(Customer, pk=pk)
     customer_purchase_orders = customer.customer_orders.filter(purchase=purchase_pk)
 
-    response = export_data_to_excel(customer.name, customer_purchase_orders, customer=True)
+    response = export_data_to_excel(
+        customer.name, customer_purchase_orders, customer=True
+    )
 
     return response

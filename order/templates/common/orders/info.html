@@ -3,7 +3,7 @@
 <div class="d-flex flex-column justify-content-center">
     <p class="text-xl font-weight-bold mb-1">
         <a class="link-primary" href="{% url 'order' pk=id %}" title="{{ title }}">
-            {{ title|truncatechars:40 }}
+            {{ title|truncatechars:30 }}
         </a>
     </p>
     <p class="text-xs mb-2">

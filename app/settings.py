@@ -18,7 +18,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "192.168.31.100", "*", "localhost"]
 
-INTERNAL_IPS = ["127.0.0.1",]
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Application definition
 
@@ -140,47 +142,47 @@ MESSAGE_TAGS = {
 }
 
 # Logging
-LOGGING = {  
-    'version': 1,  
-    'disable_existing_loggers': False,  
-    'formatters': {  
-        'verbose': {  
-            'format': '{levelname} {asctime} {module} {message}',  
-            'style': '{',  
-        },  
-        'simple': {  
-            'format': '{levelname} {message}',  
-            'style': '{',  
-        },  
-    },  
-    'handlers': {  
-        'console': {  
-            'level': 'DEBUG',  
-            'class': 'logging.StreamHandler',  
-            'formatter': 'simple',  
-        },  
-        'file': {  
-            'level': 'INFO',  
-            'class': 'logging.FileHandler',  
-            'filename': 'order.log',  
-            'formatter': 'verbose',  
-        },  
-    },  
-    'loggers': {  
-        'django': {  
-            'handlers': ['console'],  
-            'level': 'INFO',  
-            'propagate': True,  
-        },  
-        'django.server': {  
-            'handlers': ['console'],  
-            'level': 'ERROR',  
-            'propagate': False,  
-        },  
-        'order': {  
-            'handlers': ['file'],  
-            'level': 'INFO',  
-            'propagate': False,  
-        },  
-    },  
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'order.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'order': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
 }

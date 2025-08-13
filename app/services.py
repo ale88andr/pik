@@ -25,7 +25,9 @@ ORDERS_HEADER = [
 def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None, customer=False):
     CTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     response = HttpResponse(content_type=CTYPE)
-    response["Content-Disposition"] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
+    response[
+        "Content-Disposition"
+    ] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
 
     # Создание excel
     wb = openpyxl.Workbook()
@@ -78,7 +80,9 @@ def export_data_to_excel(fname, qs, header=ORDERS_HEADER, footer=None, customer=
 def export_to_excel(fname, data, header, footer=None):
     CTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     response = HttpResponse(content_type=CTYPE)
-    response["Content-Disposition"] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
+    response[
+        "Content-Disposition"
+    ] = f"attachment; filename={escape_uri_path(fname)}.xlsx"
 
     # Создание excel
     wb = openpyxl.Workbook()

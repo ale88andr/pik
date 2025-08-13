@@ -142,7 +142,7 @@
                                         <td class="text-center">
                                             {% include "common/orders/image.html" with img=item.img id=item.id url=item.url title=item.title %}
                                         </td>
-                                        <td>
+                                        <td class="col-2">
                                             {% include "common/orders/info.html" with id=item.pk title=item.title url=item.url status_str=item.get_status status=item.status marketplace=item.marketplace %}
                                         </td>
                                         <td>

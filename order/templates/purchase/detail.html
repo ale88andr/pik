@@ -240,16 +240,43 @@
     });
 
     new Chart(ctx2, {
+        type: "bar",
+        data: {
+        labels: {{ customer_chart_labels|safe }},
+        datasets: [
+                {
+                    label: "Кол-во заказов",
+                    data: {{ customer_chart_values|safe }},
+                    maxBarThickness: 6
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                display: true,
+                }
+            },
+            interaction: {
+                intersect: true,
+                mode: 'index',
+            },
+        },
+    });
+
+    {% comment %} new Chart(ctx2, {
         type: "pie",
         data: {
         labels: {{ customer_chart_labels|safe }},
         datasets: [
-            {
-            label: "Кол-во заказов",
-            data: {{ customer_chart_values|safe }},
-            maxBarThickness: 6
-            },
-        ],
+                {
+                    label: "Кол-во заказов",
+                    data: {{ customer_chart_values|safe }},
+                    maxBarThickness: 6
+                },
+            ],
         },
         options: {
         responsive: true,
@@ -264,7 +291,7 @@
             mode: 'index',
         },
         },
-    });
+    }); {% endcomment %}
 
     new Chart(ctx3, {
         type: "polarArea",

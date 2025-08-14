@@ -92,7 +92,7 @@
 
             text = removeFromText(text, floatRegExp)
 
-            titleInput.value = text.charAt(0).toUpperCase() + text.slice(1)
+            titleInput.value = text.charAt(0).toUpperCase().trim() + text.slice(1)
         }
 
         const dropZone = document.getElementById('dropZone')
